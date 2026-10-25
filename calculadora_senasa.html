@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calculadora ATPL</title>
+<style>
+  html,body{margin:0;background:#fff;font-family:Arial,Helvetica,sans-serif}
+  body{display:flex;justify-content:center;padding:8px;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+  #calc{width:min(100%,600px);box-sizing:border-box;background:#ccc;border:1px solid #000;padding:8px 8px 14px}
+  #d{background:#fff;border:1px solid #f00;text-align:right;font-weight:bold;font-size:clamp(22px,4.5vh,30px);
+     padding:6px 8px;margin-bottom:8px;height:clamp(30px,5.5vh,40px);line-height:clamp(30px,5.5vh,40px);overflow:hidden;white-space:nowrap}
+  .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(5px,1.2vh,9px) 7px}
+  hr{border:0;border-top:1px solid #999;margin:12px 0}
+  button{height:clamp(40px,6.8vh,60px);background:#f5f5f5;border:1px solid #000;font:bold clamp(15px,2.6vh,19px) Arial,Helvetica,sans-serif;
+     color:#222;cursor:pointer;padding:0}
+  button:active{background:#ddd}
+  button:focus-visible{outline:3px solid #06f;outline-offset:1px}
+  .f,.r{color:#f00}.b{color:#00f}
+</style>
+</head>
+<body>
+<div id="calc">
+  <div id="d">0.</div>
+  <div class="grid" id="top"></div>
+  <hr>
+  <div class="grid" id="bot"></div>
+</div>
+<script>
+const TOP=["sin","cos","tan","ln","log","asin","acos","atan","e^x","10^x","x^y","x^3","x^2","e","π",
+ "y√x","3√x","√x","x↔y","1/x","(",")","n!","‰","%"];
+const BOT=[["1","b"],["2","b"],["3","b"],["+",""],["MS",""],
+ ["4","b"],["5","b"],["6","b"],["-",""],["M+",""],
+ ["7","b"],["8","b"],["9","b"],["*",""],["M-",""],
+ ["0","b"],[".","b"],["EXP",""],["/",""],["MR",""],
+ ["+/-",""],["RND",""],["C","r"],["=","r"]["MC",""]];
+function mk(parent,label,cls){const b=document.createElement("button");b.textContent=label;b.dataset.k=label;if(cls)b.className=cls;parent.appendChild(b);}
+TOP.forEach(l=>mk(document.getElementById("top"),l,"f"));
+BOT.forEach(([l,c])=>mk(document.getElementById("bot"),l,c));
+
+const $d=document.getElementById("d");
+const RAD=Math.PI/180;
+let toks=[],entry="0",fresh=true,val=0,lastOp=false,numPushed=false,M=0,err=false;
+
+function fmt(s){return /[.e]/.test(s)?s:s+".";}
+function render(){
+  if(err){$d.textContent="Error";return;}
+  $d.textContent=fresh?fmt(String(parseFloat(val.toPrecision(12)))):fmt(entry);
+}
+function getVal(){return fresh?val:(parseFloat(entry)||0);}
+function setVal(v){
+  if(typeof v!=="number"||!isFinite(v)){err=true;render();return;}
+  val=v;fresh=true;lastOp=false;
+  if(numPushed)toks[toks.length-1]=v;
+  render();
+}
+const clean=x=>Math.abs(x)<1e-12?0:x;
+const PREC={"+":1,"-":1,"*":2,"/":2,"^":3,"r":3};
+function apply(o,a,b){
+  switch(o){
+    case"+":return a+b;case"-":return a-b;case"*":return a*b;case"/":return a/b;
+    case"^":return Math.pow(a,b);
+    case"r":{ // a = índice de la raíz (y), b = radicando (x)
+      if(a===0)return NaN;
+      if(b<0&&Number.isInteger(a)&&Math.abs(a)%2===1)return -Math.pow(-b,1/a);
+      return Math.pow(b,1/a);}
+  }
+}
+function evalToks(t){
+  let i=0;
+  function prim(){const x=t[i++];if(x==="("){const v=expr(1);if(t[i]===")")i++;return v;}return x;}
+  function expr(min){
+    let l=prim();
+    while(i<t.length&&PREC[t[i]]>=min){
+      const o=t[i++],p=PREC[o];
+      const r=expr(o==="^"?p:p+1);
+      l=apply(o,l,r);
+    }
+    return l;
+  }
+  return expr(1);
+}
+function fact(v){
+  if(v<0||!Number.isInteger(v)||v>170)return NaN;
+  let r=1;for(let i=2;i<=v;i++)r*=i;return r;
+}
+const FN={
+  "sin":v=>clean(Math.sin(v*RAD)),
+  "cos":v=>clean(Math.cos(v*RAD)),
+  "tan":v=>{const c=clean(Math.cos(v*RAD));return c===0?NaN:clean(Math.sin(v*RAD))/c;},
+  "asin":v=>Math.abs(v)>1?NaN:Math.asin(v)/RAD,
+  "acos":v=>Math.abs(v)>1?NaN:Math.acos(v)/RAD,
+  "atan":v=>Math.atan(v)/RAD,
+  "ln":v=>v>0?Math.log(v):NaN,
+  "log":v=>v>0?Math.log10(v):NaN,
+  "e^x":v=>Math.exp(v),
+  "10^x":v=>Math.pow(10,v),
+  "x^3":v=>v*v*v,
+  "x^2":v=>v*v,
+  "3√x":v=>Math.cbrt(v),
+  "√x":v=>v<0?NaN:Math.sqrt(v),
+  "1/x":v=>v===0?NaN:1/v,
+  "n!":fact,
+  "%":v=>v/100,
+  "‰":v=>v/1000
+};
+
+function digit(d){
+  if(numPushed){toks.pop();numPushed=false;}
+  if(fresh){entry=d;fresh=false;}
+  else if(entry==="0")entry=d;
+  else if(entry==="-0")entry="-"+d;
+  else if(entry.length<16)entry+=d;
+  lastOp=false;render();
+}
+function dot(){
+  if(numPushed){toks.pop();numPushed=false;}
+  if(fresh){entry="0.";fresh=false;}
+  else if(!/[.e]/.test(entry))entry+=".";
+  lastOp=false;render();
+}
+function expKey(){
+  if(numPushed){numPushed=false;}
+  if(fresh){entry=String(parseFloat(val.toPrecision(12)));fresh=false;}
+  if(!entry.includes("e"))entry+="e";
+  lastOp=false;render();
+}
+function signKey(){
+  if(fresh){setVal(-val);return;}
+  if(entry.includes("e")){
+    entry=/e-/.test(entry)?entry.replace("e-","e"):entry.replace("e","e-");
+  }else entry=entry.startsWith("-")?entry.slice(1):"-"+entry;
+  render();
+}
+function op(o){
+  const v=getVal();
+  if(lastOp){toks[toks.length-1]=o;}
+  else{if(!numPushed)toks.push(v);toks.push(o);}
+  numPushed=false;lastOp=true;val=v;fresh=true;render();
+}
+function lp(){toks.push("(");numPushed=false;lastOp=false;fresh=true;val=0;render();}
+function rp(){
+  const idx=toks.lastIndexOf("(");
+  if(idx<0)return;
+  if(!numPushed)toks.push(getVal());
+  const v=evalToks(toks.slice(idx+1));
+  toks.splice(idx);toks.push(v);
+  numPushed=true;lastOp=false;
+  if(!isFinite(v)){err=true;render();return;}
+  val=v;fresh=true;render();
+}
+function eq(){
+  if(!numPushed)toks.push(getVal());
+  let r;try{r=evalToks(toks);}catch(e){r=NaN;}
+  toks=[];numPushed=false;lastOp=false;
+  setVal(r);
+}
+function swap(){
+  if(toks.length>=2&&typeof toks[toks.length-2]==="number"&&!lastOp&&!numPushed){
+    const a=toks[toks.length-2],b=getVal();
+    toks[toks.length-2]=b;val=a;fresh=true;render();
+  }
+}
+function clearAll(){toks=[];entry="0";fresh=true;val=0;lastOp=false;numPushed=false;err=false;render();}
+
+function press(k){
+  if(k==="C"){clearAll();return;}
+  if(err)return;
+  if(/^[0-9]$/.test(k))return digit(k);
+  switch(k){
+    case".":return dot();
+    case"EXP":return expKey();
+    case"+/-":return signKey();
+    case"+":case"-":case"*":case"/":return op(k);
+    case"x^y":return op("^");
+    case"y√x":return op("r");
+    case"(":return lp();
+    case")":return rp();
+    case"=":return eq();
+    case"x↔y":return swap();
+    case"e":return setVal(Math.E);
+    case"π":return setVal(Math.PI);
+    case"RND":return setVal(Math.random());
+    case"MS":M=getVal();return;
+    case"M+":M+=getVal();return;
+    case"M-":M-=getVal();return;
+    case"MR":return setVal(M);
+    case"MC":M=0;return;
+  }
+  if(FN[k])setVal(FN[k](getVal()));
+}
+document.getElementById("calc").addEventListener("click",e=>{
+  const b=e.target.closest("button");if(b)press(b.dataset.k);
+});
+document.addEventListener("keydown",e=>{
+  const k=e.key;
+  if(/^[0-9]$/.test(k)||"+-*/().".includes(k))press(k==="."?".":k);
+  else if(k==="Enter"||k==="="){e.preventDefault();press("=");}
+  else if(k==="Escape")press("C");
+  else if(k==="Backspace"&&!fresh&&!err){entry=entry.length>1?entry.slice(0,-1):"0";if(entry==="-")entry="0";render();}
+});
+render();
+</script>
+</body>
+</html>
