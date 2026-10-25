@@ -6,126 +6,175 @@
     <title>ATPL(H) Tools</title>
     <style>
       :root {
-        --bg: #f4f7fb;
-        --panel: #ffffff;
-        --accent: #0b57d0;
-        --accent-dark: #0849a8;
-        --text: #1f2937;
-        --muted: #5b6472;
-        --border: #dfe6ee;
+        --bg: #0b1220;
+        --bg-soft: #121d2d;
+        --panel: #172334;
+        --panel-alt: #1b2b3d;
+        --primary: #4da3ff;
+        --primary-strong: #2f7ef7;
+        --text: #edf4ff;
+        --muted: #b5c4d9;
+        --border: rgba(255,255,255,0.08);
+        --shadow: rgba(0,0,0,0.28);
       }
 
       * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
 
       body {
         margin: 0;
         font-family: Arial, Helvetica, sans-serif;
-        background: var(--bg);
+        background: radial-gradient(circle at top, #14243b 0%, var(--bg) 45%, #060d17 100%);
         color: var(--text);
+        min-height: 100vh;
       }
 
       .container {
-        max-width: 1000px;
+        max-width: 1100px;
         margin: 0 auto;
-        padding: 40px 20px 60px;
+        padding: 42px 20px 70px;
       }
 
-      .header {
-        margin-bottom: 28px;
+      .hero {
         text-align: center;
+        margin-bottom: 30px;
       }
 
-      .header h1 {
-        margin: 0 0 10px;
-        font-size: clamp(2rem, 4vw, 3rem);
+      .badge {
+        display: inline-block;
+        background: rgba(77, 163, 255, 0.12);
+        color: var(--primary);
+        border: 1px solid rgba(77, 163, 255, 0.35);
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
       }
 
-      .header p {
-        margin: 0;
+      h1 {
+        margin: 18px 0 12px;
+        font-size: clamp(2.2rem, 5vw, 3.5rem);
+        letter-spacing: -0.04em;
+      }
+
+      .subtitle {
+        margin: 0 auto;
+        max-width: 760px;
         color: var(--muted);
         font-size: 1.05rem;
+        line-height: 1.6;
       }
 
       .grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 20px;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 22px;
+        margin-top: 30px;
       }
 
       .card {
-        background: var(--panel);
+        background: linear-gradient(180deg, var(--panel) 0%, var(--panel-alt) 100%);
         border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 20px;
-        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+        border-radius: 18px;
+        padding: 22px;
+        box-shadow: 0 14px 26px var(--shadow);
+      }
+
+      .icon {
+        width: 52px;
+        height: 52px;
+        display: grid;
+        place-items: center;
+        border-radius: 12px;
+        font-size: 1.5rem;
+        background: rgba(77, 163, 255, 0.12);
+        border: 1px solid rgba(77, 163, 255, 0.2);
+        margin-bottom: 16px;
       }
 
       .card h2 {
-        margin: 0 0 12px;
-        font-size: 1.2rem;
+        margin: 0 0 10px;
+        font-size: 1.25rem;
       }
 
       .card p {
-        margin: 0 0 16px;
+        margin: 0 0 18px;
         color: var(--muted);
-        line-height: 1.5;
+        line-height: 1.55;
       }
 
       .card a {
         display: inline-block;
-        background: var(--accent);
-        color: #fff;
         text-decoration: none;
+        background: var(--primary);
+        color: #fff;
         padding: 10px 16px;
-        border-radius: 9px;
-        font-weight: bold;
+        border-radius: 10px;
+        font-weight: 700;
+        transition: background 0.2s ease, transform 0.2s ease;
       }
 
       .card a:hover {
-        background: var(--accent-dark);
+        background: var(--primary-strong);
+        transform: translateY(-1px);
       }
 
-      .status {
-        margin-top: 28px;
-        background: #ecfdf5;
-        border: 1px solid #b7ebc6;
-        color: #166534;
-        padding: 14px 16px;
-        border-radius: 10px;
-        font-weight: 600;
+      .card.secondary a {
+        background: rgba(255,255,255,0.04);
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+
+      .card.secondary a:hover {
+        background: rgba(255,255,255,0.07);
+      }
+
+      footer {
+        text-align: center;
+        color: var(--muted);
+        margin-top: 30px;
+        font-size: 0.95rem;
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <div class="header">
-        <h1>ATPL(H) Tools</h1>
-        <p>Centro de herramientas, calculadoras y recursos para entrenamiento y estudio.</p>
+      <div class="hero">
+        <span class="badge">ATPL(H) Tools</span>
+        <h1>Biblioteca de herramientas</h1>
+        <p class="subtitle">
+          Colección centralizada de calculadoras, simulaciones y recursos para estudio y trabajo práctico del ATPL(H).
+        </p>
       </div>
 
       <div class="grid">
         <div class="card">
+          <div class="icon">🧮</div>
           <h2>Calculadora General</h2>
-          <p>Herramienta básica para operaciones rápidas, conversiones y cálculos generales.</p>
-          <a href="./calculadora_senasa.html">Abrir</a>
+          <p>Operaciones básicas, conversiones y cálculo rápido para uso diario en ejercicios y comprobaciones.</p>
+          <a href="./calculadora_senasa.html">Abrir herramienta</a>
         </div>
 
-        <div class="card">
+        <div class="card secondary">
+          <div class="icon">📘</div>
           <h2>Futuras calculadoras</h2>
-          <p>Preparado para añadir herramientas de peso y balance, rendimiento, rutas y planificación.</p>
+          <p>Espacio reservado para rendimiento, peso y balance, combustible, rutas y más herramientas especializadas.</p>
           <a href="#">Próximamente</a>
         </div>
 
-        <div class="card">
+        <div class="card secondary">
+          <div class="icon">📝</div>
           <h2>Documentación</h2>
-          <p>Notas, referencias, checklist y documentación útil para el estudio del ATPL(H).</p>
+          <p>Notas, procedimientos, checklist y recursos de consulta para apoyar el estudio continuo.</p>
           <a href="#">Próximamente</a>
         </div>
       </div>
 
-      <div class="status">
-        Sitio estático listo para GitHub Pages. Cuando habilites Pages en el repositorio, esta página será la principal del proyecto.
-      </div>
+      <footer>
+        ATPL(H) Tools • Repositorio pensado para crecer con cada nueva herramienta.
+      </footer>
     </div>
   </body>
 </html>
