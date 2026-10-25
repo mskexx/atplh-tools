@@ -33,7 +33,7 @@ const BOT=[["1","b"],["2","b"],["3","b"],["+",""],["MS",""],
  ["4","b"],["5","b"],["6","b"],["-",""],["M+",""],
  ["7","b"],["8","b"],["9","b"],["*",""],["M-",""],
  ["0","b"],[".","b"],["EXP",""],["/",""],["MR",""],
- ["+/-",""],["RND",""],["C","r"],["=","r"]["MC",""]];
+ ["+/-",""],["RND",""],["C","r"],["=","r"],["MC",""]];
 function mk(parent,label,cls){const b=document.createElement("button");b.textContent=label;b.dataset.k=label;if(cls)b.className=cls;parent.appendChild(b);}
 TOP.forEach(l=>mk(document.getElementById("top"),l,"f"));
 BOT.forEach(([l,c])=>mk(document.getElementById("bot"),l,c));
