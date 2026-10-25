@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ATPL(H) Tools</title>
+    <style>
+      :root {
+        --bg: #f4f7fb;
+        --panel: #ffffff;
+        --accent: #0b57d0;
+        --accent-dark: #0849a8;
+        --text: #1f2937;
+        --muted: #5b6472;
+        --border: #dfe6ee;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 40px 20px 60px;
+      }
+
+      .header {
+        margin-bottom: 28px;
+        text-align: center;
+      }
+
+      .header h1 {
+        margin: 0 0 10px;
+        font-size: clamp(2rem, 4vw, 3rem);
+      }
+
+      .header p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+      }
+
+      .card h2 {
+        margin: 0 0 12px;
+        font-size: 1.2rem;
+      }
+
+      .card p {
+        margin: 0 0 16px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .card a {
+        display: inline-block;
+        background: var(--accent);
+        color: #fff;
+        text-decoration: none;
+        padding: 10px 16px;
+        border-radius: 9px;
+        font-weight: bold;
+      }
+
+      .card a:hover {
+        background: var(--accent-dark);
+      }
+
+      .status {
+        margin-top: 28px;
+        background: #ecfdf5;
+        border: 1px solid #b7ebc6;
+        color: #166534;
+        padding: 14px 16px;
+        border-radius: 10px;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>ATPL(H) Tools</h1>
+        <p>Centro de herramientas, calculadoras y recursos para entrenamiento y estudio.</p>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h2>Calculadora General</h2>
+          <p>Herramienta básica para operaciones rápidas, conversiones y cálculos generales.</p>
+          <a href="./calculadora_senasa.html">Abrir</a>
+        </div>
+
+        <div class="card">
+          <h2>Futuras calculadoras</h2>
+          <p>Preparado para añadir herramientas de peso y balance, rendimiento, rutas y planificación.</p>
+          <a href="#">Próximamente</a>
+        </div>
+
+        <div class="card">
+          <h2>Documentación</h2>
+          <p>Notas, referencias, checklist y documentación útil para el estudio del ATPL(H).</p>
+          <a href="#">Próximamente</a>
+        </div>
+      </div>
+
+      <div class="status">
+        Sitio estático listo para GitHub Pages. Cuando habilites Pages en el repositorio, esta página será la principal del proyecto.
+      </div>
+    </div>
+  </body>
+</html>
