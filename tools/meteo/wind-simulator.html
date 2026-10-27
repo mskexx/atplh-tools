@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wind simulator</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1b2430;--mu:#5d6b7c;--bd:#d9dee5;--geo:#1f6feb;--loc:#e8710a;--lo:#c62828;--hi:#1a7f4b;--iso:#8795a6;--sky:#eaf3ff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161c;--card:#1b222b;--tx:#e6ebf1;--mu:#93a1b3;--bd:#2d3744;--geo:#5aa2ff;--loc:#ffa24d;--lo:#ff7a7a;--hi:#4cc38a;--iso:#6d7c8f;--sky:#17263a}}
+:root[data-theme="dark"]{--bg:#12161c;--card:#1b222b;--tx:#e6ebf1;--mu:#93a1b3;--bd:#2d3744;--geo:#5aa2ff;--loc:#ffa24d;--lo:#ff7a7a;--hi:#4cc38a;--iso:#6d7c8f;--sky:#17263a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:980px;margin:0 auto;padding:16px}
+h1{font-size:1.3rem;margin:0 0 12px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.ctl label{display:block;font-size:.85rem;color:var(--mu)}
+.ctl div{display:flex;gap:8px;align-items:center}
+.ctl input[type=range]{flex:1}
+.ctl input[type=number],select{padding:4px;border:1px solid var(--bd);border-radius:6px;background:var(--bg);color:var(--tx);font:inherit}
+.ctl input[type=number]{width:70px}
+.row{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.kp div{border:1px solid var(--bd);border-radius:10px;padding:8px 10px;border-top-width:4px}
+.kp small{display:block;color:var(--mu)}.kp b{font:700 1.1rem ui-monospace,Menlo,Consolas,monospace}
+.g{border-top-color:var(--geo)!important}.l{border-top-color:var(--loc)!important}
+.plots{display:flex;gap:12px;flex-wrap:wrap}.plots svg{display:block;height:auto}
+#m{flex:2 1 320px;min-width:0;width:100%}#p{flex:1 1 220px;min-width:0;width:100%}
+ul{margin:6px 0 0;padding-left:20px}li{margin:4px 0}
+.leg{font-size:.85rem;color:var(--mu)}
+.v{color:var(--loc);font-weight:700}
+</style></head><body><main>
+<h1>Wind simulator · veer, back, stronger, weaker</h1>
+
+<div class="card"><div class="grid" id="ctl">
+<div class="ctl"><label>Hemisphere</label><div><select id="hem"><option value="N">Northern</option><option value="S">Southern</option></select></div></div>
+<div class="ctl"><label>Surface</label><div><select id="sfc"><option value="land">Land (≈30°, ≈½ speed)</option><option value="sea">Sea (≈15°, ≈⅔ speed)</option></select></div></div>
+</div>
+<div class="row"><button id="rst" style="border:1px solid var(--bd);background:var(--bg);color:var(--tx);padding:7px 11px;border-radius:8px;cursor:pointer;font:inherit">Reset</button></div>
+</div>
+
+<div class="card"><div class="plots">
+<svg id="m" viewBox="0 0 380 380" role="img" aria-label="Pressure map with winds"></svg>
+<svg id="p" viewBox="0 0 260 380" role="img" aria-label="Wind profile with height"></svg>
+</div>
+<div class="leg" style="margin-top:6px">Left: top view, north up. Blue arrow = geostrophic wind (parallel to isobars). Orange arrow = wind at the chosen height. Arrows point where the wind blows TO; the wind is named after where it comes FROM. Right: the same wind at each height, seen from above (the tips form the spiral).</div>
+</div>
+
+<div class="card"><div class="kp" id="kp"></div><div id="msg" style="margin-top:10px"></div></div>
+
+<div class="card"><b>Rules for this hemisphere</b><ul id="rules"></ul></div>
+</main>
+<script>
+const F=[
+{id:'dir',l:'Geostrophic wind direction, from (°)',min:0,max:360,step:5,v:270},
+{id:'lat',l:'Latitude (°)',min:15,max:75,step:1,v:50},
+{id:'sp',l:'Isobar spacing (NM per 4 hPa)',min:30,max:200,step:5,v:90},
+{id:'h',l:'Height above surface (ft)',min:0,max:3000,step:100,v:0}];
+const S={hem:'N',sfc:'land'};
+const $=i=>document.getElementById(i);
+F.forEach(f=>{S[f.id]=f.v;const d=document.createElement('div');d.className='ctl';
+d.innerHTML=`<label>${f.l}</label><div><input type=range id=r_${f.id} min=${f.min} max=${f.max} step=${f.step} value=${f.v}><input type=number id=n_${f.id} min=${f.min} max=${f.max} step=${f.step} value=${f.v}></div>`;
+$('ctl').appendChild(d);
+const set=v=>{v=Number(v);if(isNaN(v))return;S[f.id]=v;$('r_'+f.id).value=v;$('n_'+f.id).value=v;draw()};
+$('r_'+f.id).oninput=e=>set(e.target.value);$('n_'+f.id).onchange=e=>set(e.target.value)});
+$('hem').onchange=e=>{S.hem=e.target.value;draw()};$('sfc').onchange=e=>{S.sfc=e.target.value;draw()};
+$('rst').onclick=()=>{F.forEach(f=>{S[f.id]=f.v;$('r_'+f.id).value=f.v;$('n_'+f.id).value=f.v});S.hem='N';S.sfc='land';$('hem').value='N';$('sfc').value='land';draw()};
+const rad=d=>d*Math.PI/180,norm=d=>((d%360)+360)%360;
+const fd=d=>{const n=Math.round(norm(d));return String(n===0?360:n).padStart(3,'0')};
+const sd=(a,b)=>((b-a+540)%360)-180;
+function geo(){const g=400/(S.sp*1852),f=2*7.292e-5*Math.sin(rad(S.lat))*1.225;return g/f*1.9438}
+function wind(h,G){const land=S.sfc==='land',be=land?30:15,sf=land?.5:.7,f=Math.min(1,h/2000);
+return{dir:S.dir+(S.hem==='N'?-1:1)*be*(1-f),spd:G*(sf+(1-sf)*f)}}
+function arrow(cx,cy,dir,len,col,w){const a=rad(dir+180),ux=Math.sin(a),uy=-Math.cos(a),ex=cx+ux*len,ey=cy+uy*len,hs=Math.min(11,len/2);
+return {ex,ey,s:`<line x1="${cx}" y1="${cy}" x2="${ex}" y2="${ey}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/><polygon points="${ex},${ey} ${ex-ux*hs+uy*hs*.5},${ey-uy*hs-ux*hs*.5} ${ex-ux*hs-uy*hs*.5},${ey-uy*hs+ux*hs*.5}" fill="${col}"/>`}}
+const word=d=>Math.abs(d)<.5?'same direction':(d<0?'BACKED ':'VEERED ')+Math.round(Math.abs(d))+'°';
+function draw(){
+const G=geo(),N=S.hem==='N',w=wind(S.h,G),w0=wind(0,G);
+const dd=sd(S.dir,w.dir),d0=sd(w0.dir,w.dir),ds=w.spd-w0.spd,dg=w.spd-G;
+$('kp').innerHTML=`<div class="g"><small>Geostrophic (2000 ft and above)</small><b>${fd(S.dir)}° / ${Math.round(G)} kt</b></div><div class="l"><small>Wind at ${S.h} ft</small><b>${fd(w.dir)}° / ${Math.round(w.spd)} kt</b></div><div class="l"><small>vs geostrophic</small><b>${word(dd)}</b><small>${Math.round(dg)} kt (${Math.round(w.spd/G*100)}% of geo)</small></div><div class="l"><small>vs surface wind (climb)</small><b>${word(d0)}</b><small>${ds>=0?'+':''}${Math.round(ds)} kt</small></div>`;
+$('msg').innerHTML=S.h===0?`At the surface the wind is <span class="v">${N?'BACKED':'VEERED'}</span> and <span class="v">WEAKER</span> than the geostrophic wind, and it blows across the isobars towards the low.`:S.h>=2000?`Above about 2000 ft friction is gone: the wind is geostrophic (parallel to the isobars).`:`Climbing from the surface to ${S.h} ft the wind <span class="v">${N?'VEERS':'BACKS'}</span> and <span class="v">INCREASES</span>.`;
+const be=S.sfc==='land'?30:15,pc=S.sfc==='land'?50:70;
+$('rules').innerHTML=`<li><b>Buys Ballot:</b> stand with your back to the wind and the low is on your <b>${N?'LEFT':'RIGHT'}</b>.</li><li><b>Veer</b> = clockwise change (240 → 270). <b>Back</b> = anticlockwise (270 → 240).</li><li><b>Geostrophic wind</b> blows parallel to the isobars. Close isobars = strong, wide isobars = weak. It gets stronger at low latitude for the same gradient.</li><li><b>Surface wind</b> (friction): <b>${N?'BACKED':'VEERED'}</b> about ${be}° from the geostrophic wind, about ${pc}% of its speed, crossing the isobars towards the <b>low</b>.</li><li><b>Climbing</b> to about 2000 ft: wind <b>${N?'VEERS':'BACKS'}</b> and <b>INCREASES</b>. <b>Descending</b>: <b>${N?'BACKS':'VEERS'}</b> and <b>DECREASES</b>.</li><li><b>Above the friction layer</b> (thermal wind): ${N?'warm advection → veers with height; cold advection → backs with height':'warm advection → backs with height; cold advection → veers with height'}.</li>`;
+// map
+const C=190,low=N?S.dir+90:S.dir-90,n=[Math.sin(rad(low)),-Math.cos(rad(low))],ag=S.dir+180,av=[Math.sin(rad(ag)),-Math.cos(rad(ag))],spx=20+S.sp*.55;
+let s=`<rect width="380" height="380" fill="var(--sky)" opacity=".35"/><text x="8" y="18" font-size="12" fill="var(--mu)">N ↑</text>`;
+for(let k=-3;k<=3;k++){const bx=C+n[0]*k*spx,by=C+n[1]*k*spx;
+s+=`<line x1="${bx-av[0]*300}" y1="${by-av[1]*300}" x2="${bx+av[0]*300}" y2="${by+av[1]*300}" stroke="var(--iso)" stroke-width="1.5"/>`;
+const tx=bx-av[0]*120,ty=by-av[1]*120;if(tx>10&&tx<350&&ty>25&&ty<370)s+=`<text x="${tx}" y="${ty}" font-size="10" fill="var(--mu)">${1008-4*k}</text>`}
+s+=`<text x="${C+n[0]*165}" y="${C+n[1]*165+8}" text-anchor="middle" font-size="26" font-weight="700" fill="var(--lo)">L</text><text x="${C-n[0]*165}" y="${C-n[1]*165+8}" text-anchor="middle" font-size="26" font-weight="700" fill="var(--hi)">H</text>`;
+const L=x=>Math.min(150,x*2.4);
+const A=arrow(C,C,S.dir,L(G),'var(--geo)',3),B=arrow(C,C,w.dir,L(w.spd),'var(--loc)',4);
+if(Math.abs(dd)>.5){let p='';for(let i=0;i<=12;i++){const a=rad(ag+dd*i/12);p+=`${C+46*Math.sin(a)},${C-46*Math.cos(a)} `}
+const am=rad(ag+dd/2);s+=`<polyline points="${p}" fill="none" stroke="var(--mu)" stroke-width="1.5"/><text x="${C+64*Math.sin(am)}" y="${C-64*Math.cos(am)+4}" text-anchor="middle" font-size="11" fill="var(--mu)">${word(dd).toLowerCase()}</text>`}
+s+=A.s+B.s+`<circle cx="${C}" cy="${C}" r="3" fill="var(--tx)"/>`;
+const lab=(t,x,y,c)=>`<text x="${x+(x>C?8:-8)}" y="${y+4}" text-anchor="${x>C?'start':'end'}" font-size="12" font-weight="700" fill="${c}">${t}</text>`;
+s+=lab(`Geo ${fd(S.dir)}/${Math.round(G)}`,A.ex,A.ey,'var(--geo)')+lab(`${S.h} ft ${fd(w.dir)}/${Math.round(w.spd)}`,B.ex,B.ey+(Math.abs(A.ey-B.ey)<14?14:0),'var(--loc)');
+$('m').innerHTML=s;
+// profile
+const hy=h=>350-h/3000*320,ox=100,sc=70/Math.max(G,1);let q='',tips='';
+q+=`<line x1="20" x2="250" y1="${hy(2000)}" y2="${hy(2000)}" stroke="var(--mu)" stroke-dasharray="4 4"/><text x="22" y="${hy(2000)-4}" font-size="10" fill="var(--mu)">≈ top of friction layer</text><text x="8" y="14" font-size="11" fill="var(--mu)">Height (ft)</text>`;
+[0,500,1000,1500,2000,2500,3000].forEach(h=>{const x=wind(h,G),a=arrow(ox,hy(h),x.dir,x.spd*sc,h>=2000?'var(--geo)':'var(--mu)',2);tips+=`${a.ex},${a.ey} `;
+q+=a.s+`<circle cx="${ox}" cy="${hy(h)}" r="2.5" fill="var(--tx)"/><text x="185" y="${hy(h)+4}" font-size="11" fill="var(--mu)">${h}: ${fd(x.dir)}/${Math.round(x.spd)}</text>`});
+q+=`<polyline points="${tips}" fill="none" stroke="var(--mu)" stroke-width="1" opacity=".6"/>`;
+q+=arrow(ox,hy(S.h),w.dir,w.spd*sc,'var(--loc)',4).s+`<circle cx="${ox}" cy="${hy(S.h)}" r="4" fill="var(--loc)"/>`;
+$('p').innerHTML=q}
+draw();
+</script></body></html>

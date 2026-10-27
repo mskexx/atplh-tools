@@ -308,6 +308,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     // createElement so they execute, awaiting onload for src scripts to
     // preserve ordering (React before ReactDOM before Babel before text/babel).
     const doc = new DOMParser().parseFromString(template, 'text/html');
+    const homeLinkScript = doc.createElement('script');
+    homeLinkScript.src = new URL('../../home-link.js', window.location.href).href;
+    doc.body.appendChild(homeLinkScript);
     document.documentElement.replaceWith(doc.documentElement);
 
     // Resolve page-frame markers: mint this document's own blob for each

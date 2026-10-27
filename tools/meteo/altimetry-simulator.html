@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Altimetry simulator</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1b2430;--mu:#5d6b7c;--bd:#d9dee5;--ps:#1f6feb;--tp:#e8710a;--st:#1a7f4b;--bad:#c62828;--sky:#eaf3ff;--ter:#8d7b68;--ia:#6b7787;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161c;--card:#1b222b;--tx:#e6ebf1;--mu:#93a1b3;--bd:#2d3744;--ps:#5aa2ff;--tp:#ffa24d;--st:#4cc38a;--bad:#ff7a7a;--sky:#17263a;--ter:#6b5d4e;--ia:#a3b0c0}}
+:root[data-theme="dark"]{--bg:#12161c;--card:#1b222b;--tx:#e6ebf1;--mu:#93a1b3;--bd:#2d3744;--ps:#5aa2ff;--tp:#ffa24d;--st:#4cc38a;--bad:#ff7a7a;--sky:#17263a;--ter:#6b5d4e;--ia:#a3b0c0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:980px;margin:0 auto;padding:16px}
+h1{font-size:1.3rem;margin:0 0 12px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:14px}
+.f1{font:600 1.05rem ui-monospace,Menlo,Consolas,monospace;overflow-x:auto;white-space:nowrap;padding:2px 0}
+.f2{font:.92rem ui-monospace,Menlo,Consolas,monospace;color:var(--mu);overflow-x:auto;white-space:nowrap;margin-top:6px}
+.p{color:var(--ps)}.t{color:var(--tp);border:1.5px solid var(--tp);border-radius:6px;padding:0 6px}
+.f2 .t{padding:0 4px}.n{border:0!important;padding:0!important}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:12px}
+.steps div{border:1px solid var(--bd);border-radius:10px;padding:8px 10px;border-top-width:4px}
+.steps small{display:block;color:var(--mu)}.steps b{font:700 1.15rem ui-monospace,Menlo,Consolas,monospace}
+.s0{border-top-color:var(--ia)!important}.sp{border-top-color:var(--ps)!important}.st{border-top-color:var(--tp)!important}.sr{border-top-color:var(--tx)!important}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.ctl{border-left:4px solid var(--bd);padding-left:10px}.ctl.p{border-left-color:var(--ps)}.ctl.t{border:0;border-left:4px solid var(--tp);border-radius:0;padding:0 0 0 10px;color:inherit}.ctl.s{border-left-color:var(--st)}
+.ctl label{display:block;font-size:.85rem;color:var(--mu)}
+.ctl div{display:flex;gap:8px;align-items:center}
+.ctl input[type=range]{flex:1}.ctl.p input[type=range]{accent-color:var(--ps)}.ctl.t input[type=range]{accent-color:var(--tp)}.ctl.s input[type=range]{accent-color:var(--st)}
+.ctl input[type=number]{width:84px;padding:4px;border:1px solid var(--bd);border-radius:6px;background:var(--bg);color:var(--tx)}
+button{border:1px solid var(--bd);background:var(--bg);color:var(--tx);padding:7px 11px;border-radius:8px;cursor:pointer;font:inherit}
+button:hover{border-color:var(--ps)}
+svg{width:100%;height:auto;display:block}
+#st{font-weight:700;margin-top:8px}
+#stn{margin-top:10px;font-size:.9rem;color:var(--st)}
+.leg{font-size:.85rem;color:var(--mu)}
+.ex{margin:0}
+</style></head><body><main>
+<h1>Altimetry simulator · helicopter</h1>
+
+<div class="card">
+<div class="f1">TA = IA + <span class="p">(QNH − QNH2) × <span id="kk">27</span></span> + <span class="t">[ 0.004 × ISA DEV × ΔALT ]</span></div>
+<div class="f2">where ΔALT = IA − station elevation (height above the QNH source)</div>
+<div class="f2" id="f2"></div>
+<div class="steps" id="steps"></div>
+<div class="leg" style="margin-top:10px"><span class="p">Blue = pressure correction (QNH)</span> · <span class="t n">Orange = temperature correction</span> · <span style="color:var(--st)">Green = QNH station</span>. TA true altitude · IA indicated altitude · QNH actual sea-level pressure from the station · QNH2 altimeter setting · ISA DEV deviation from ISA (°C) · ΔALT height used for the temperature error (ft). The ISA deviation is assumed constant between the station and the aircraft.</div>
+</div>
+
+<div class="card">
+<p class="ex"><b>Exercise (Mont Blanc).</b> A helicopter crosses a mountain range with the altimeter set to 1013 hPa (flight level) and reads 18000 ft. The QNH, measured at a sea-level station, is 983 hPa and the temperature is ISA −25 °C. What is its true altitude? Does it clear the 15872 ft peak?</p>
+</div>
+
+<div class="card"><div class="grid" id="ctl"></div>
+<div id="stn"></div>
+<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+<button id="b1013">Set QNH2 = 1013 (FL)</button>
+<button id="brst">Reset exercise</button>
+<label class="leg">Conversion: <select id="kk2"><option value="27" selected>27 ft/hPa (Meteorology)</option><option value="30">30 ft/hPa (Instruments)</option></select></label>
+</div></div>
+
+<div class="card">
+<svg id="map" viewBox="0 0 760 370" role="img" aria-label="Helicopter flight profile"></svg>
+<div id="st"></div>
+<div class="leg" style="margin-top:6px">Solid helicopter = real position (TA). Dashed = what the pilot reads (IA). From indicated to true there are two steps: pressure first (blue), then temperature (orange). The gray bracket is ΔALT, measured from the QNH station.</div>
+</div>
+</main>
+<script>
+const F=[
+{id:'ia',l:'Indicated altitude IA (ft)',min:0,max:20000,step:50,v:18000,g:''},
+{id:'q2',l:'QNH2: altimeter setting (hPa)',min:960,max:1050,step:1,v:1013,g:'p'},
+{id:'qh',l:'Actual QNH of the area (hPa)',min:960,max:1050,step:1,v:983,g:'p'},
+{id:'isa',l:'ISA DEV (°C)',min:-70,max:40,step:1,v:-25,g:'t'},
+{id:'el',l:'QNH station elevation (ft)',min:0,max:6000,step:50,v:0,g:'s'},
+{id:'pk',l:'Terrain: peak elevation (ft)',min:0,max:18000,step:100,v:15872,g:''}];
+const S={},E={};let K=27;
+const $=i=>document.getElementById(i);
+F.forEach(f=>{S[f.id]=f.v;const d=document.createElement('div');d.className='ctl '+f.g;
+d.innerHTML=`<label>${f.l}</label><div><input type=range id=r_${f.id} min=${f.min} max=${f.max} step=${f.step} value=${f.v}><input type=number id=n_${f.id} min=${f.min} max=${f.max} step=${f.step} value=${f.v}></div>`;
+$('ctl').appendChild(d);
+const set=v=>{v=Number(v);if(isNaN(v))return;S[f.id]=v;$('r_'+f.id).value=v;$('n_'+f.id).value=v;draw()};
+E[f.id]=set;$('r_'+f.id).oninput=e=>set(e.target.value);$('n_'+f.id).onchange=e=>set(e.target.value)});
+$('b1013').onclick=()=>E.q2(1013);
+$('brst').onclick=()=>{F.forEach(f=>{S[f.id]=f.v;$('r_'+f.id).value=f.v;$('n_'+f.id).value=f.v});draw()};
+$('kk2').onchange=e=>{K=+e.target.value;draw()};
+const sn=n=>(n<0?'−':'')+Math.abs(Math.round(n));
+const sg=n=>(n<0?'−':'+')+' '+Math.abs(Math.round(n));
+const X0=60,W=680,Y0=330,H=300,YM=20000,CX=X0+W/2;
+const yy=a=>Y0-Math.max(0,Math.min(YM,a))/YM*H;
+const ter=(x,pk,el)=>pk*Math.exp(-Math.pow((x-.5)/.18,2))+el/(1+Math.exp((x-.15)/.02));
+function heli(x,y,dash,col){return `<g transform="translate(${x},${y}) scale(.6)" fill="${dash?'none':col}" stroke="${col}" stroke-width="${dash?2.2:1.6}" ${dash?'stroke-dasharray="4 4"':''}><ellipse cx="0" cy="0" rx="15" ry="9"/><path d="M12 -2 L38 -3 L38 1 L12 3Z"/><path d="M34 -3 L38 -12 L42 -12 L40 0Z"/><path d="M-26 -14 H26 M0 -9 V-14" fill="none"/><path d="M-14 13 H14 M-8 9 V13 M8 9 V13" fill="none"/></g>`}
+function draw(){
+$('kk').textContent=K;
+const dalt=Math.max(0,S.ia-S.el),pc=(S.qh-S.q2)*K,tc=0.004*S.isa*dalt,mid=S.ia+pc,ta=mid+tc;
+const pa=S.ia+(1013-S.q2)*K;
+$('f2').innerHTML=`ΔALT = ${S.ia} − ${S.el} = ${dalt} ft<br>TA = ${S.ia} + <span class="p">(${S.qh} − ${S.q2}) × ${K}</span> + <span class="t">[ 0.004 × (${sn(S.isa)}) × ${dalt} ]</span>`;
+const isaT=15-2*S.el/1000;
+$('stn').textContent=`Station conditions: elevation ${S.el} ft · ISA temperature there ${isaT.toFixed(1)} °C · with ISA ${S.isa>0?'+':''}${sn(S.isa)} the station temperature is ${(isaT+S.isa).toFixed(1)} °C.`;
+$('steps').innerHTML=`<div class="s0"><small>IA · altimeter reading</small><b>${S.ia} ft</b></div><div class="sp"><small class="p">QNH correction</small><b class="p">${sg(pc)} ft</b></div><div class="st"><small class="t n">Temperature correction</small><b class="t n">${sg(tc)} ft</b></div><div class="sr"><small>TA · true altitude</small><b>${sn(ta)} ft</b></div>`;
+const cl=ta-S.pk,st=$('st');
+const fl=S.q2===1013?' · FL'+String(Math.round(pa/100)).padStart(3,'0'):'';
+let m='';
+if(S.pk>0){if(cl<0){st.style.color='var(--bad)';m=`⚠ Impact: the true altitude (${sn(ta)} ft) is ${sn(-cl)} ft below the peak.`}else if(cl<1000){st.style.color='var(--tp)';m=`Only ${sn(cl)} ft above the peak (less than 1000 ft).`}else{st.style.color='var(--st)';m=`Terrain clearance OK: ${sn(cl)} ft above the peak.`}}else st.style.color='var(--mu)';
+st.textContent=m+`  Pressure altitude: ${sn(pa)} ft${fl}.`;
+let s='';
+for(let a=0;a<=20000;a+=5000)s+=`<line x1="${X0}" x2="${X0+W}" y1="${yy(a)}" y2="${yy(a)}" stroke="var(--bd)"/><text x="${X0-6}" y="${yy(a)+4}" text-anchor="end" font-size="11" fill="var(--mu)">${a/1000}k ft</text>`;
+s+=`<rect x="${X0}" y="${Y0-H}" width="${W}" height="${H}" fill="var(--sky)" opacity=".35"/>`;
+let pts=`${X0},${Y0}`;for(let i=0;i<=60;i++){const x=i/60;pts+=` ${X0+x*W},${yy(ter(x,S.pk,S.el))}`}pts+=` ${X0+W},${Y0}`;
+s+=`<polygon points="${pts}" fill="var(--ter)"/>`;
+if(S.pk>0)s+=`<text x="${CX}" y="${yy(S.pk)+16}" text-anchor="middle" font-size="11" fill="#fff">${S.pk} ft</text>`;
+const sx=X0+.07*W,sy=yy(S.el);
+s+=`<path d="M${sx} ${sy} V${sy-22} L${sx+14} ${sy-17} L${sx} ${sy-12}" fill="var(--st)" stroke="var(--st)" stroke-width="2"/><text x="${sx-4}" y="${sy-28}" font-size="11" fill="var(--st)">QNH station ${S.el} ft</text>`;
+s+=`<line x1="${X0}" x2="${X0+W}" y1="${yy(S.ia)}" y2="${yy(S.ia)}" stroke="var(--ia)" stroke-dasharray="6 4"/><text x="${X0+W-4}" y="${yy(S.ia)-4}" text-anchor="end" font-size="11" fill="var(--ia)">IA ${S.ia}</text>`;
+s+=`<line x1="${X0}" x2="${X0+W}" y1="${yy(mid)}" y2="${yy(mid)}" stroke="var(--ps)" stroke-dasharray="2 4"/><text x="${X0+W-4}" y="${yy(mid)+13}" text-anchor="end" font-size="11" fill="var(--ps)">after QNH correction ${sn(mid)}</text>`;
+s+=`<line x1="${X0}" x2="${X0+W}" y1="${yy(ta)}" y2="${yy(ta)}" stroke="var(--tp)"/><text x="${X0+W-4}" y="${yy(ta)+13}" text-anchor="end" font-size="11" fill="var(--tp)">TA ${sn(ta)}</text>`;
+const bx=CX+60,gx=CX-60;
+s+=`<line x1="${bx}" x2="${bx}" y1="${yy(S.ia)}" y2="${yy(mid)}" stroke="var(--ps)" stroke-width="5"/><text x="${bx+10}" y="${(yy(S.ia)+yy(mid))/2+4}" font-size="12" fill="var(--ps)">QNH ${sg(pc)} ft</text>`;
+s+=`<line x1="${bx}" x2="${bx}" y1="${yy(mid)}" y2="${yy(ta)}" stroke="var(--tp)" stroke-width="5"/><text x="${bx+10}" y="${(yy(mid)+yy(ta))/2+4}" font-size="12" fill="var(--tp)">Temp. ${sg(tc)} ft</text>`;
+s+=`<path d="M${gx-5} ${yy(S.el)} H${gx+5} M${gx} ${yy(S.el)} V${yy(S.ia)} M${gx-5} ${yy(S.ia)} H${gx+5}" stroke="var(--mu)" stroke-width="2" fill="none"/><text x="${gx-9}" y="${(yy(S.el)+yy(S.ia))/2+4}" text-anchor="end" font-size="12" fill="var(--mu)">ΔALT ${dalt} ft</text>`;
+s+=heli(CX,yy(S.ia),true,'var(--ia)')+heli(CX,yy(ta),false,'var(--tp)');
+s+=`<text x="${CX}" y="${Y0+18}" text-anchor="middle" font-size="11" fill="var(--mu)">QNH2 ${S.q2} hPa · actual QNH ${S.qh} hPa · ISA ${S.isa>0?'+':''}${sn(S.isa)} °C</text>`;
+$('map').innerHTML=s}
+draw();
+</script></body></html>
