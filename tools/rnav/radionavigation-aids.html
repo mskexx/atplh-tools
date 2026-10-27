@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Radionavegación: ayudas en un vistazo</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#E9EEF3;--sf:#F8FAFC;--ink:#10243A;--mu:#51647A;--ln:#C3CFDB;--ac:#B3205F}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0C1826;--sf:#13243A;--ink:#E6EEF7;--mu:#93A7BD;--ln:#2A4260;--ac:#FF6FA5}}
+html{height:100%}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Georgia,"Times New Roman",serif;min-height:100%}
+.w{max-width:860px;margin:0 auto;padding:20px 16px 48px}
+h1{font:700 26px/1.2 "Trebuchet MS",system-ui,sans-serif;margin:0 0 4px}
+.sub{color:var(--mu);margin:0 0 16px}
+nav{display:flex;gap:6px;flex-wrap:wrap;border-bottom:2px solid var(--ln);margin-bottom:16px}
+nav button{font:600 15px system-ui,sans-serif;background:none;border:0;color:var(--mu);padding:10px 14px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}
+nav button[aria-selected=true]{color:var(--ink);border-color:var(--ac)}
+button:focus-visible,rect:focus-visible,tr:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+.p{display:none}.p.on{display:block}
+.box{background:var(--sf);border:1px solid var(--ln);border-radius:6px;padding:14px;margin-top:14px}
+.sc{overflow-x:auto}.sc svg{min-width:640px;width:100%;height:auto;display:block}
+svg text{font:12px system-ui,sans-serif;fill:var(--ink)}svg .mu{fill:var(--mu)}
+rect.b{cursor:pointer}rect.b.sel{stroke:var(--ink);stroke-width:2.5}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chip{font:600 13px system-ui,sans-serif;border:2px solid;border-radius:20px;padding:4px 12px;background:var(--sf);color:var(--ink);cursor:pointer}
+.chip.sel{color:#fff}
+dl{margin:10px 0 0;display:grid;grid-template-columns:130px 1fr;gap:8px 14px}
+dt{font:600 14px system-ui,sans-serif;color:var(--mu)}dd{margin:0}
+.tip{border-left:4px solid var(--ac);padding:4px 10px;margin-top:12px;font-style:italic}
+h2{font:700 20px system-ui,sans-serif;margin:0 0 4px}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--ln);vertical-align:top}
+th{font:600 13px system-ui,sans-serif;color:var(--mu)}tbody tr{cursor:pointer}tbody tr:hover{background:var(--bg)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+input[type=range]{width:100%;accent-color:var(--ac)}
+.big{font:700 40px system-ui,sans-serif;color:var(--ac)}
+label{font:600 14px system-ui,sans-serif}
+.card{min-height:150px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:19px;padding:20px;cursor:pointer;border:2px dashed var(--ln);border-radius:6px;background:var(--sf)}
+.card.a{border-style:solid;border-color:var(--ac)}
+.row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center}
+.btn{font:600 14px system-ui,sans-serif;border:2px solid var(--ink);background:var(--sf);color:var(--ink);padding:8px 14px;border-radius:4px;cursor:pointer}
+.btn.pr{background:var(--ink);color:var(--bg)}
+</style></head><body><div class="w">
+<h1>Radionavegación</h1>
+<p class="sub">NDB/ADF, VOR, DME, ILS, marker beacons y MLS: frecuencias, alcances y errores.</p>
+<nav role="tablist" id="nav"></nav>
+
+<section class="p on" id="p0">
+<p class="sub">Eje en escala logarítmica. Toca una barra o un sistema para ver su ficha.</p>
+<div class="box sc"><svg id="sp" viewBox="0 0 780 330" role="img" aria-label="Espectro de frecuencias de las ayudas a la navegación"></svg></div>
+<div class="chips" id="chips"></div>
+<div class="box" id="det"></div>
+</section>
+
+<section class="p" id="p1"><div class="box tw"><table><thead><tr><th>Sistema</th><th>Frecuencia</th><th>Banda</th><th>Alcance</th><th>Precisión</th></tr></thead><tbody id="tb"></tbody></table></div>
+<p class="sub" style="margin-top:10px">Toca una fila para abrir la ficha completa.</p></section>
+
+<section class="p" id="p2"><div class="box">
+<h2>Alcance por línea de vista (VOR, DME, LOC, GS)</h2>
+<p class="sub">Las ondas VHF/UHF no siguen la curvatura terrestre: Alcance (NM) = 1,23 × (√h avión + √h estación), h en pies.</p>
+<label for="ha">Altitud del avión: <span id="hav"></span> ft</label>
+<input type="range" id="ha" min="0" max="45000" step="500" value="10000">
+<label for="hs">Elevación de la estación: <span id="hsv"></span> ft</label>
+<input type="range" id="hs" min="0" max="10000" step="100" value="0">
+<div class="big" id="rg"></div>
+<div class="tw"><table style="min-width:0"><thead><tr><th>Nivel</th><th>Alcance (estación a nivel del mar)</th></tr></thead><tbody id="fl"></tbody></table></div>
+<p class="sub">El NDB (LF/MF) usa onda de superficie: su alcance depende de la potencia, no de la altitud.</p>
+</div></section>
+
+<section class="p" id="p3"><div class="box">
+<div class="sub" id="sc"></div>
+<div class="card" id="cd" tabindex="0" role="button"></div>
+<div class="row"><button class="btn" id="fl1">Voltear</button><button class="btn pr" id="ok">Lo sabía</button><button class="btn" id="ko">Repasar</button></div>
+</div></section>
+</div>
+<script>
+const S=[
+{id:'ndb',n:'NDB / ADF',c:'#9A5B00',lo:.19,hi:1.75,f:'190–1750 kHz',b:'LF/MF',
+r:'Según potencia: locator ≈ 15–25 NM; en ruta 50 NM o más (onda de superficie)',a:'±5°',
+h:'El ADF mide el rumbo relativo (RB) a la estación con antena de lazo y sentido. No da radial: QDM = rumbo magnético + RB.',
+e:'Efecto nocturno, refracción costera, efecto montaña, tormentas (CB) y error cuadrantal.',t:'La aguja del ADF apunta a las tormentas: es la ayuda más barata y la menos fiable.'},
+{id:'mkr',n:'Marker beacons',c:'#5B6B7C',lo:74.8,hi:75.2,f:'75 MHz',b:'VHF',
+r:'Haz vertical estrecho: solo informa al pasar encima',a:'Posición fija',
+h:'OM 400 Hz, azul, rayas, 4–7 NM. MM 1300 Hz, ámbar, punto-raya, ≈ 3500 ft del umbral. IM 3000 Hz, blanco, puntos.',
+e:'Cada vez más sustituidos por DME.',t:'Frecuencia de audio sube de OM a IM: 400 → 1300 → 3000 Hz.'},
+{id:'vor',n:'VOR',c:'#1F5FA8',lo:108,hi:117.95,f:'108,00–117,95 MHz',b:'VHF',
+r:'Línea de vista: 1,23·√h. A 10 000 ft ≈ 123 NM',a:'±1° (chequeo VOT ±4°)',
+h:'Compara la fase de una señal de referencia de 30 Hz (FM) con una variable de 30 Hz (AM). Da el radial, sea cual sea el rumbo del avión.',
+e:'Cono de silencio sobre la estación, reflexiones en el terreno, ambigüedad TO/FROM.',t:'De 108 a 111,95 MHz con décima par es VOR; con décima impar es LOC.'},
+{id:'loc',n:'ILS: localizador',c:'#B3205F',lo:108.1,hi:111.95,f:'108,10–111,95 MHz (décima impar)',b:'VHF',
+r:'25 NM dentro de ±10°; 17 NM entre 10° y 35°',a:'Anchura de rumbo 3°–6°',
+h:'Dos lóbulos modulados a 90 Hz y 150 Hz. Viendo la pista de frente: 90 Hz a la izquierda, 150 Hz a la derecha. Antena al final de la pista.',
+e:'Vehículos y aeronaves en el área crítica y sensible; curso inverso.',t:'90 a la izquierda y arriba, 150 a la derecha y abajo.'},
+{id:'gs',n:'ILS: senda de planeo',c:'#1E8C7A',lo:328.6,hi:335.4,f:'328,6–335,4 MHz',b:'UHF',
+r:'10 NM dentro de ±8° del eje',a:'Senda 3° (2,5°–3,5°)',
+h:'Mismos tonos 90/150 Hz, en vertical: 90 Hz arriba, 150 Hz abajo. Emite a ≈ 300 m del umbral, junto a la pista. Cobertura de 0,45θ a 1,75θ.',
+e:'Falsos lóbulos a ángulos altos, relieve y nieve ante el emisor.',t:'La frecuencia de GS se asigna automáticamente al sintonizar el LOC.'},
+{id:'dme',n:'DME / TACAN',c:'#6B3FA0',lo:962,hi:1213,f:'962–1213 MHz (252 canales)',b:'UHF',
+r:'Línea de vista; hasta ≈ 200 NM',a:'≈ ±0,2 NM',
+h:'Radar secundario: el avión interroga con pares de pulsos y mide el retardo de la respuesta. Da distancia oblicua (slant range). TACAN: militar, azimut y distancia, 126 canales X/Y.',
+e:'Error de distancia oblicua cerca de la estación y a gran altitud; saturación con muchos usuarios.',t:'Siempre aparejado a VOR o ILS; la sintonía VHF elige el canal UHF.'},
+{id:'mls',n:'MLS',c:'#C0392B',lo:5031,hi:5090.7,f:'5031–5090,7 MHz (200 canales)',b:'SHF (banda C)',
+r:'20 NM; azimut ±40° (hasta ±60°); elevación 0,9°–15°',a:'Mejor que ILS',
+h:'Haz de barrido con referencia temporal (TRSB): el receptor mide el tiempo entre los barridos «to» y «fro». Permite aproximaciones curvas y ángulos de planeo seleccionables.',
+e:'Poco implantado: lo desplazó el GNSS.',t:'Más canales, menos sensible al emplazamiento, cubre un sector y no un solo eje.'}];
+const Q=[['Banda y frecuencias del NDB','LF/MF, 190–1750 kHz'],['Banda y frecuencias del VOR','VHF, 108,00–117,95 MHz'],['Frecuencias del localizador ILS','108,10–111,95 MHz, décima impar'],['Frecuencias de la senda de planeo','328,6–335,4 MHz (UHF)'],['Frecuencias del DME','962–1213 MHz (UHF)'],['Frecuencias del MLS','5031–5090,7 MHz (banda C)'],['Frecuencia de los marker beacons','75 MHz'],['Tono del outer marker','400 Hz, azul, rayas'],['Tono del middle marker','1300 Hz, ámbar, punto-raya'],['Tono del inner marker','3000 Hz, blanco, puntos'],['Modulación del LOC: lado izquierdo','90 Hz (150 Hz a la derecha)'],['Modulación de la GS: arriba','90 Hz (150 Hz abajo)'],['Cobertura del LOC','25 NM (±10°) y 17 NM (10°–35°)'],['Alcance VOR a 10 000 ft','1,23·√10000 ≈ 123 NM'],['Principio del VOR','Comparación de fase de 30 Hz (referencia FM, variable AM)'],['Principio del DME','Radar secundario: pulsos y tiempo de respuesta; mide distancia oblicua'],['Errores del ADF','Nocturno, costero, montaña, tormentas, cuadrantal'],['Cobertura del MLS','20 NM, ±40° en azimut, hasta 15° en elevación']];
+const $=i=>document.getElementById(i);let cur='vor';
+const tabs=['Espectro','Comparar','Alcance','Repaso'];
+$('nav').innerHTML=tabs.map((t,i)=>`<button role="tab" data-i="${i}">${t}</button>`).join('');
+function tab(i){document.querySelectorAll('.p').forEach((p,k)=>p.classList.toggle('on',k==i));
+document.querySelectorAll('nav button').forEach((b,k)=>b.setAttribute('aria-selected',k==i))}
+$('nav').onclick=e=>{const b=e.target.closest('button');if(b)tab(+b.dataset.i)};
+const L=130,W=620,X=f=>L+(Math.log10(f)+1)/5*W;
+let g='';[[.1,'100 kHz'],[1,'1 MHz'],[10,'10 MHz'],[100,'100 MHz'],[1000,'1 GHz'],[10000,'10 GHz']].forEach(([f,t])=>{const x=X(f);
+g+=`<line x1="${x}" x2="${x}" y1="14" y2="296" stroke="var(--ln)"/><text class="mu" x="${x}" y="316" text-anchor="middle">${t}</text>`});
+S.forEach((s,i)=>{const y=22+i*40,x1=X(s.lo),w=Math.max(8,X(s.hi)-x1),r=x1>520;
+g+=`<text x="${L-10}" y="${y+18}" text-anchor="end">${s.n}</text><rect class="b" id="r_${s.id}" data-id="${s.id}" tabindex="0" role="button" aria-label="${s.n}" x="${x1}" y="${y}" width="${w}" height="26" rx="3" fill="${s.c}"/>
+<text class="mu" x="${r?x1-8:x1+w+8}" y="${y+18}" text-anchor="${r?'end':'start'}">${s.f}</text>`});
+$('sp').innerHTML=g;
+$('chips').innerHTML=S.map(s=>`<button class="chip" data-id="${s.id}" style="border-color:${s.c}">${s.n}</button>`).join('');
+function show(id){cur=id;const s=S.find(x=>x.id==id);
+document.querySelectorAll('.chip').forEach(c=>{const on=c.dataset.id==id;c.classList.toggle('sel',on);c.style.background=on?s.c:''});
+document.querySelectorAll('rect.b').forEach(r=>r.classList.toggle('sel',r.dataset.id==id));
+$('det').innerHTML=`<h2><span class="dot" style="background:${s.c}"></span>${s.n}</h2><dl><dt>Frecuencia</dt><dd>${s.f} (${s.b})</dd><dt>Alcance</dt><dd>${s.r}</dd><dt>Precisión</dt><dd>${s.a}</dd><dt>Principio</dt><dd>${s.h}</dd><dt>Errores</dt><dd>${s.e}</dd></dl><div class="tip">${s.t}</div>`}
+$('sp').onclick=e=>{const r=e.target.closest('rect');if(r)show(r.dataset.id)};
+$('sp').onkeydown=e=>{if(e.key=='Enter'&&e.target.dataset.id)show(e.target.dataset.id)};
+$('chips').onclick=e=>{const c=e.target.closest('.chip');if(c)show(c.dataset.id)};
+$('tb').innerHTML=S.map(s=>`<tr tabindex="0" data-id="${s.id}"><td><span class="dot" style="background:${s.c}"></span><b>${s.n}</b></td><td>${s.f}</td><td>${s.b}</td><td>${s.r}</td><td>${s.a}</td></tr>`).join('');
+const go=e=>{const t=e.target.closest('tr');if(t){show(t.dataset.id);tab(0);scrollTo(0,0)}};
+$('tb').onclick=go;$('tb').onkeydown=e=>{if(e.key=='Enter')go(e)};
+const rg=(a,b)=>(1.23*(Math.sqrt(a)+Math.sqrt(b))).toFixed(0);
+function calc(){const a=+$('ha').value,b=+$('hs').value;$('hav').textContent=a.toLocaleString('es');$('hsv').textContent=b.toLocaleString('es');$('rg').textContent=rg(a,b)+' NM'}
+$('ha').oninput=$('hs').oninput=calc;calc();
+$('fl').innerHTML=[50,100,200,300,400].map(n=>`<tr><td>FL${String(n).padStart(3,'0')}</td><td>${rg(n*100,0)} NM</td></tr>`).join('');
+let q=[],qi=0,flip=false,okc=0;
+function deck(){q=[...Q].sort(()=>Math.random()-.5);qi=0;okc=0;draw()}
+function draw(){const c=$('cd');if(qi>=q.length){c.textContent=`Mazo completado: sabías ${okc} de ${q.length}.`;c.className='card';$('sc').textContent='';
+if(okc<q.length){$('ok').textContent='Barajar';$('ko').style.display='none';$('ok').onclick=()=>{$('ok').textContent='Lo sabía';$('ko').style.display='';$('ok').onclick=nx(1);deck()}}return}
+c.textContent=flip?q[qi][1]:q[qi][0];c.className='card'+(flip?' a':'');$('sc').textContent=`Tarjeta ${qi+1} de ${q.length} · aciertos: ${okc}`}
+function nx(v){return()=>{if(qi>=q.length)return;okc+=v;qi++;flip=false;draw()}}
+$('cd').onclick=$('fl1').onclick=()=>{if(qi<q.length){flip=!flip;draw()}};
+$('cd').onkeydown=e=>{if(e.key=='Enter'||e.key==' '){e.preventDefault();$('cd').click()}};
+$('ok').onclick=nx(1);$('ko').onclick=nx(0);
+tab(0);show('vor');deck();
+</script></body></html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<!-- saved from url=(0039)https://heli.caching.nu/imanol-fpl.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>FPL Interactive Guide</title>
+<style>
+  :root {
+    --bg:#0f1117;--s1:#1a1d27;--s2:#242836;--bd:#2e3345;--tx:#e4e7ef;--dim:#8890a6;
+    --ac:#4f8cff;--acg:rgba(79,140,255,.15);--ac2:#34d399;--ac3:#f59e0b;
+    --fh:rgba(79,140,255,.08);--fa:rgba(79,140,255,.18);--pb:#161924;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--tx);
+    -webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+
+  .hdr{position:sticky;top:0;z-index:10;padding:14px 16px;border-bottom:1px solid var(--bd);background:var(--s1)}
+  .hdr h1{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:clamp(.72rem,2.6vw,1rem);font-weight:700;color:var(--ac);letter-spacing:.04em}
+  .hdr p{color:var(--dim);font-size:clamp(.68rem,2vw,.82rem);margin-top:2px}
+
+  @media(min-width:900px){
+    .wrap{display:flex;height:calc(100vh - 60px)}
+    .form-sc{flex:1;overflow-y:auto;padding:24px}
+    .dsk{width:420px;min-width:420px;border-left:2px solid var(--bd);background:var(--pb);overflow-y:auto;display:flex;flex-direction:column}
+    .mob-drawer,.mob-bk{display:none!important}
+  }
+  @media(max-width:899px){
+    .dsk{display:none!important}
+    .form-sc{padding:12px;padding-bottom:80px}
+  }
+
+  .fpl{max-width:780px;margin:0 auto;border:2px solid var(--bd);border-radius:8px;overflow:hidden;background:var(--s1)}
+  .fpl-t{text-align:center;padding:10px;font-family:'JetBrains Mono',monospace;font-weight:700;
+    font-size:clamp(.82rem,2.4vw,1rem);background:var(--s2);border-bottom:2px solid var(--bd);letter-spacing:.06em}
+  .fpl-t span{display:block;font-size:.75rem;color:var(--dim);font-weight:400}
+
+  .sb{border-bottom:2px solid var(--bd)}.sb:last-child{border-bottom:none}
+  .sl{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--dim);padding:5px 10px;background:var(--s2);border-bottom:1px solid var(--bd)}
+  .fr{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--bd)}.fr:last-child{border-bottom:none}
+
+  .fd{padding:8px 10px;border-right:1px solid var(--bd);cursor:pointer;transition:background .15s;
+    min-height:48px;display:flex;flex-direction:column;justify-content:center;
+    -webkit-user-select:none;user-select:none}
+  .fd:last-child{border-right:none}
+  .fd:active,.fd.on{background:var(--fa)}
+  @media(hover:hover){.fd:hover{background:var(--fh)}}
+  .fd.on{box-shadow:inset 0 0 0 2px var(--ac);border-radius:2px}
+
+  .fn{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--ac);font-weight:700;margin-bottom:1px}
+  .fm{font-size:clamp(.58rem,1.7vw,.7rem);font-weight:600;line-height:1.3}
+  .fb{margin-top:3px;border:1px dashed var(--bd);border-radius:3px;height:16px;background:rgba(255,255,255,.02)}
+
+  .w1{flex:1 1 100%}.w2{flex:1 1 48%;min-width:110px}.w3{flex:1 1 30%;min-width:90px}
+  .w4{flex:1 1 23%;min-width:80px}.w5{flex:1 1 64%;min-width:130px}.ws{flex:1 1 100px;min-width:75px}
+
+  .st{text-align:center;padding:6px 8px;font-size:.56rem;background:var(--s2);border-bottom:1px solid var(--bd);color:var(--dim);font-family:'JetBrains Mono',monospace;line-height:1.4}
+
+  .ih{padding:14px 18px;border-bottom:1px solid var(--bd);background:var(--s2)}
+  .ih .tg{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:700;color:var(--ac);background:var(--acg);padding:2px 8px;border-radius:3px;margin-bottom:4px}
+  .ih h2{font-size:clamp(.86rem,2.4vw,1rem);font-weight:700;line-height:1.3}
+  .ib{padding:14px 18px;font-size:clamp(.79rem,2.2vw,.84rem);line-height:1.7}
+  .ib p{margin-bottom:8px}
+  .ib .rl{background:var(--s2);border-left:3px solid var(--ac);padding:8px 12px;border-radius:0 4px 4px 0;margin:8px 0;line-height:1.6}
+  .ib .ex{font-family:'JetBrains Mono',monospace;font-size:clamp(.66rem,1.9vw,.76rem);background:var(--s2);padding:8px 12px;border-radius:4px;margin:6px 0;color:var(--ac2);border:1px solid var(--bd);word-break:break-all;overflow-wrap:break-word}
+  .ib .og{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin:8px 0}
+  .ib .ok{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--ac3);word-break:break-all}
+  .ib h3{font-size:clamp(.78rem,2.1vw,.86rem);font-weight:700;color:var(--ac);margin:12px 0 4px;font-family:'JetBrains Mono',monospace}
+
+  .es{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:40px;text-align:center}
+  .es .ic{width:56px;height:56px;border:2px dashed var(--bd);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:1.6rem;color:var(--dim)}
+  .es p{color:var(--dim);font-size:.85rem;max-width:240px;line-height:1.5}
+
+  .mob-bk{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:90}
+  .mob-bk.open{display:block}
+  .mob-drawer{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--pb);border-top:2px solid var(--ac);
+    border-radius:16px 16px 0 0;max-height:82vh;overflow:hidden;transform:translateY(100%);
+    transition:transform .3s ease-out;visibility:hidden}
+  .mob-drawer.open{transform:translateY(0);visibility:visible}
+  .dh{display:flex;justify-content:center;padding:10px 0 4px}
+  .dh span{width:36px;height:4px;border-radius:2px;background:var(--bd);display:block}
+  .dc{position:absolute;top:10px;right:14px;width:34px;height:34px;border:none;background:var(--s2);color:var(--dim);border-radius:50%;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-appearance:none}
+  .ds{overflow-y:auto;-webkit-overflow-scrolling:touch;max-height:calc(82vh - 50px);padding-bottom:40px}
+
+  ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+</style>
+<style>.f1l1o3bf{font-family:Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif, Arial;font-style:normal;font-weight:400}.f1l1o3bf button, .f1l1o3bf input, .f1l1o3bf textarea{font-family:inherit}</style></head>
+<body data-new-gr-c-s-check-loaded="14.1341.0" data-gr-ext-installed="">
+
+<div class="hdr">
+  <h1>✈ FLIGHT PLAN — ICAO</h1>
+  <p>Tap any field to see how it is filled in</p>
+</div>
+
+<div class="wrap">
+  <div class="form-sc">
+    <div class="fpl">
+      <div class="fpl-t">FLIGHT PLAN GUIDE<span>Made by Maj. Haro</span></div>
+
+      <div class="sb">
+        <div class="sl">ATS AREA (shaded — completed by ATS or delegated)</div>
+        <div class="fr">
+          <div class="fd w4" data-f="priority"><div class="fn">PRIORITY</div><div class="fm">Priority</div><div class="fb"></div></div>
+          <div class="fd w5" data-f="addressee"><div class="fn">ADDRESSEE(S)</div><div class="fm">Addressee(s)</div><div class="fb"></div></div>
+        </div>
+        <div class="fr">
+          <div class="fd w2" data-f="filing-time"><div class="fn">FILING TIME</div><div class="fm">Filing time</div><div class="fb"></div></div>
+          <div class="fd w2" data-f="originator"><div class="fn">ORIGINATOR</div><div class="fm">Originator</div><div class="fb"></div></div>
+        </div>
+      </div>
+
+      <div class="sb"><div class="fr">
+        <div class="fd ws" data-f="item3"><div class="fn">3</div><div class="fm">MSG TYPE</div><div class="fb"></div></div>
+        <div class="fd w3" data-f="item7"><div class="fn">7</div><div class="fm">AIRCRAFT ID</div><div class="fb"></div></div>
+        <div class="fd ws" data-f="item8-rules"><div class="fn">8</div><div class="fm">FLIGHT RULES</div><div class="fb"></div></div>
+        <div class="fd ws" data-f="item8-type"><div class="fn">8</div><div class="fm">TYPE FLIGHT</div><div class="fb"></div></div>
+      </div></div>
+
+      <div class="sb"><div class="fr">
+        <div class="fd ws" data-f="item9-number"><div class="fn">9</div><div class="fm">NUMBER</div><div class="fb"></div></div>
+        <div class="fd w3" data-f="item9-type"><div class="fn">9</div><div class="fm">TYPE A/C</div><div class="fb"></div></div>
+        <div class="fd ws on" data-f="item9-wake"><div class="fn">9</div><div class="fm">WAKE TURB.</div><div class="fb"></div></div>
+        <div class="fd w4" data-f="item10"><div class="fn">10</div><div class="fm">EQUIPMENT</div><div class="fb"></div></div>
+      </div></div>
+
+      <div class="sb"><div class="fr">
+        <div class="fd w2" data-f="item13-ad"><div class="fn">13</div><div class="fm">DEPARTURE AD</div><div class="fb"></div></div>
+        <div class="fd w2" data-f="item13-time"><div class="fn">13</div><div class="fm">TIME</div><div class="fb"></div></div>
+      </div></div>
+
+      <div class="sb"><div class="fr">
+        <div class="fd w4" data-f="item15-speed"><div class="fn">15</div><div class="fm">CRUISE SPEED</div><div class="fb"></div></div>
+        <div class="fd ws" data-f="item15-level"><div class="fn">15</div><div class="fm">LEVEL</div><div class="fb"></div></div>
+        <div class="fd w2" data-f="item15-route"><div class="fn">15</div><div class="fm">ROUTE</div><div class="fb"></div></div>
+      </div></div>
+
+      <div class="sb"><div class="fr">
+        <div class="fd w3" data-f="item16-dest"><div class="fn">16</div><div class="fm">DEST. AD</div><div class="fb"></div></div>
+        <div class="fd ws" data-f="item16-eet"><div class="fn">16</div><div class="fm">TOTAL EET</div><div class="fb"></div></div>
+        <div class="fd w4" data-f="item16-altn"><div class="fn">16</div><div class="fm">ALTN AD</div><div class="fb"></div></div>
+        <div class="fd w4" data-f="item16-altn2"><div class="fn">16</div><div class="fm">2ND ALTN</div><div class="fb"></div></div>
+      </div></div>
+
+      <div class="sb"><div class="fr">
+        <div class="fd w1" data-f="item18"><div class="fn">18</div><div class="fm">OTHER INFORMATION</div><div class="fb"></div></div>
+      </div></div>
+
+      <div class="sb">
+        <div class="st">SUPPLEMENTARY INFORMATION — Item 19<br>(NOT transmitted in FPL messages)</div>
+        <div class="fr">
+          <div class="fd w2" data-f="item19-endurance"><div class="fn">19</div><div class="fm">ENDURANCE (E/)</div><div class="fb"></div></div>
+          <div class="fd w2" data-f="item19-pob"><div class="fn">19</div><div class="fm">PERSONS (P/)</div><div class="fb"></div></div>
+        </div>
+        <div class="fr"><div class="fd w1" data-f="item19-radio"><div class="fn">19</div><div class="fm">R/ EMERGENCY RADIO</div><div class="fb"></div></div></div>
+        <div class="fr"><div class="fd w1" data-f="item19-survival"><div class="fn">19</div><div class="fm">S/ SURVIVAL EQUIP.</div><div class="fb"></div></div></div>
+        <div class="fr"><div class="fd w1" data-f="item19-jackets"><div class="fn">19</div><div class="fm">J/ JACKETS</div><div class="fb"></div></div></div>
+        <div class="fr"><div class="fd w1" data-f="item19-dinghies"><div class="fn">19</div><div class="fm">D/ DINGHIES</div><div class="fb"></div></div></div>
+        <div class="fr"><div class="fd w1" data-f="item19-aircraft"><div class="fn">19</div><div class="fm">A/ COLOUR &amp; MARKINGS</div><div class="fb"></div></div></div>
+        <div class="fr"><div class="fd w1" data-f="item19-remarks"><div class="fn">19</div><div class="fm">N/ REMARKS</div><div class="fb"></div></div></div>
+        <div class="fr"><div class="fd w1" data-f="item19-pilot"><div class="fn">19</div><div class="fm">C/ PILOT IN COMMAND</div><div class="fb"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dsk" id="dsk">
+    <div class="es" id="es" style="display: none;"><div class="ic">✈</div><p>Select any FPL field to see how it is filled in.</p></div>
+    <div id="dC" style="display: block;"><div class="ih"><span class="tg" id="dT">ITEM 9</span><h2 id="dH">WAKE TURBULENCE CATEGORY (1 character)</h2></div><div class="ib" id="dB"><p>Oblique stroke followed by one letter indicating the wake category:</p><div class="og"><span class="ok">H</span><span>HEAVY — Maximum certificated take-off mass ≥ 136,000 kg</span><span class="ok">M</span><span>MEDIUM — Between 7,000 and 136,000 kg</span><span class="ok">L</span><span>LIGHT — Maximum take-off mass ≤ 7,000 kg</span></div><div class="ex">Example: /M</div></div></div>
+  </div>
+</div>
+
+<div class="mob-bk" id="bk"></div>
+<div class="mob-drawer" id="dr">
+  <div class="dh"><span></span></div>
+  <button class="dc" id="drC" type="button">✕</button>
+  <div class="ds" id="drS"><div class="ih"><span class="tg" id="mT"></span><h2 id="mH"></h2></div><div class="ib" id="mB"></div></div>
+</div>
+
+<script>
+var E = {
+"priority":{t:"ATS HEADER",h:"PRIORITY / ADDRESSEE(S) / FILING TIME / ORIGINATOR",b:'<p>The <b>shaded area</b> preceding Item 3 is reserved for completion by ATS and COM services, unless responsibility for originating flight plan messages has been delegated.</p><div class="rl">This area is NOT normally completed by the pilot. It includes Priority (FF), Addressee(s), Filing time and Originator.</div><h3>Priority FF (Flight safety messages)</h3><p>The priority indicator <b>FF</b> identifies flight safety messages (ICAO Annex 10, Vol. II, 4.4.1.1.3), which comprise:</p><p>a) Movement and control messages as defined in PANS-ATM (Doc 4444), Chapter 11.<br>b) Messages originated by an aircraft operating agency of immediate concern to aircraft in flight or preparing to depart.<br>c) Meteorological messages restricted to SIGMET, special air-reports, AIRMET, volcanic ash and tropical cyclone advisory information and amended forecasts.</p><h3>Addressee Indicator (AFTN Address)</h3><p>Each addressee indicator (ICAO Annex 10, Vol. II, 4.4.3.1.2) consists of 8 characters:</p><div class="og"><span class="ok">4 letters</span><span>ICAO four-letter location indicator of the place of destination</span><span class="ok">3 letters</span><span>Designator identifying the organization/function (aeronautical authority, service or aircraft operating agency)</span><span class="ok">1 letter</span><span>Department, division or process within the organization. The letter <b>X</b> is used to complete the address when explicit identification is not required</span></div><div class="ex">Example: LEMDZQZX → LEMD (Madrid) + ZQZ (ARO office) + X</div><p>If responsibility has been delegated to the operator, information shall be inserted in accordance with prescribed AFTN formats and procedures.</p>'},
+"addressee":{t:"ATS HEADER",h:"ADDRESSEE(S)",b:'<p>The <b>shaded area</b> preceding Item 3 is completed by ATS and COM services.</p><div class="rl">The AFTN addresses of the recipients of the flight plan message are inserted here.</div><p>Not completed by the pilot unless expressly delegated.</p>'},
+"filing-time":{t:"ATS HEADER",h:"FILING TIME",b:'<p>Time at which the flight plan was filed.</p><div class="rl">Expressed in UTC, 4-figure format (HHMM).</div><p>Normally inserted by the ATS service.</p>'},
+"originator":{t:"ATS HEADER",h:"ORIGINATOR",b:'<p>Identification of the originator of the flight plan message.</p><div class="rl">Normally completed by ATS and COM services.</div>'},
+"item3":{t:"ITEM 3",h:"MESSAGE TYPE",b:'<p>Indicates the type of flight plan message.</p><div class="rl"><b>FPL</b> is inserted for a flight plan filed before departure.</div><p>The FPL format is already pre-printed on the standard ICAO form.</p>'},
+"item7":{t:"ITEM 7",h:"AIRCRAFT IDENTIFICATION (max. 7 characters)",b:'<p>Insert <b>one</b> of the following identifications (maximum 7 characters):</p><h3>Option a) Registration marking</h3><p>The registration marking of the aircraft (e.g. EIAKO, 4XBCD, N2567GA), when:</p><p>1) In radiotelephony the call sign to be used will consist of the registration marking alone (e.g. OOTEK), or preceded by the ICAO telephony designator for the operating agency (e.g. SABENA OOTEK).</p><p>2) The aircraft is not equipped with radio.</p><h3>Option b) ICAO designator</h3><p>The ICAO designator for the aircraft operating agency followed by the flight identification (e.g. KLM511, NGA213, JTR25).</p><div class="ex">Examples: EC-ABC, ECABC, KLM511, NGA213</div>'},
+"item8-rules":{t:"ITEM 8",h:"FLIGHT RULES",b:'<p>Insert <b>one</b> of the following letters to denote the category of flight rules:</p><div class="og"><span class="ok">I</span><span>If IFR</span><span class="ok">V</span><span>If VFR</span><span class="ok">Y</span><span>If IFR first, and specify in Item 15 the point or points where a change of flight rules is planned</span><span class="ok">Z</span><span>If VFR first, and specify in Item 15 the point or points where a change of flight rules is planned</span></div><div class="rl">Letters Y and Z indicate a mixed flight. The change must be detailed in the route (Item 15).</div>'},
+"item8-type":{t:"ITEM 8",h:"TYPE OF FLIGHT",b:'<p>Insert <b>one</b> of the following letters to denote the type of flight when so required by the appropriate ATS authority:</p><div class="og"><span class="ok">S</span><span>Scheduled air service</span><span class="ok">N</span><span>Non-scheduled air transport operation</span><span class="ok">G</span><span>General aviation</span><span class="ok">M</span><span>Military</span><span class="ok">X</span><span>Other than any of the above</span></div>'},
+"item9-number":{t:"ITEM 9",h:"NUMBER OF AIRCRAFT",b:'<p>Number of aircraft if more than one (formations).</p><div class="rl">Insert the number of aircraft <b>only if more than one</b> (1 or 2 characters). Leave blank for a single aircraft.</div>'},
+"item9-type":{t:"ITEM 9",h:"TYPE OF AIRCRAFT (2-4 characters)",b:'<p>Insert the appropriate designator as specified in ICAO Doc 8643 (<i>Aircraft Type Designators</i>).</p><div class="ex">Examples: B738, A320, C172, EC35, R22</div><p>If no designator has been assigned, or for formation flights with mixed types, insert <b>ZZZZ</b> and specify in Item 18 preceded by TYP/.</p>'},
+"item9-wake":{t:"ITEM 9",h:"WAKE TURBULENCE CATEGORY (1 character)",b:'<p>Oblique stroke followed by one letter indicating the wake category:</p><div class="og"><span class="ok">H</span><span>HEAVY — Maximum certificated take-off mass ≥ 136,000 kg</span><span class="ok">M</span><span>MEDIUM — Between 7,000 and 136,000 kg</span><span class="ok">L</span><span>LIGHT — Maximum take-off mass ≤ 7,000 kg</span></div><div class="ex">Example: /M</div>'},
+"item10":{t:"ITEM 10",h:"EQUIPMENT AND CAPABILITIES",b:'<p>Capabilities comprise: a) presence of relevant serviceable equipment on board, b) equipment and capabilities commensurate with flight crew qualifications, c) where applicable, authorization from the appropriate authority.</p><h3>Radiocommunication, navigation and approach aid equipment</h3><p>Insert <b>one</b> letter as follows:</p><div class="og"><span class="ok">N</span><span>If no COM/NAV/approach aid equipment is carried, or the equipment is unserviceable</span><span class="ok">S</span><span>If standard COM/NAV/approach aid equipment is carried and serviceable: VHF RTF, VOR and ILS (unless another combination is prescribed by the appropriate ATS authority)</span></div><p>AND/OR insert one or more of the following letters to indicate the serviceable COM/NAV/approach aid equipment and capabilities available:</p><div class="og"><span class="ok">A</span><span>GBAS landing system</span><span class="ok">B</span><span>LPV (APV with SBAS)</span><span class="ok">C</span><span>LORAN C</span><span class="ok">D</span><span>DME</span><span class="ok">E1</span><span>FMC WPR ACARS</span><span class="ok">E2</span><span>D-FIS ACARS</span><span class="ok">E3</span><span>PDC ACARS</span><span class="ok">F</span><span>ADF</span><span class="ok">G</span><span>GNSS (see Note 2)</span><span class="ok">H</span><span>HF RTF</span><span class="ok">I</span><span>Inertial Navigation</span><span class="ok">J1</span><span>CPDLC ATN VDL Mode 2 (see Note 3)</span><span class="ok">J2</span><span>CPDLC FANS 1/A HFDL</span><span class="ok">J3</span><span>CPDLC FANS 1/A VDL Mode 4</span><span class="ok">J4</span><span>CPDLC FANS 1/A VDL Mode 2</span><span class="ok">J5</span><span>CPDLC FANS 1/A SATCOM (INMARSAT)</span><span class="ok">J6</span><span>CPDLC FANS 1/A SATCOM (MTSAT)</span><span class="ok">J7</span><span>CPDLC FANS 1/A SATCOM (Iridium)</span><span class="ok">K</span><span>MLS</span><span class="ok">L</span><span>ILS</span><span class="ok">M1</span><span>ATC RTF SATCOM (INMARSAT)</span><span class="ok">M2</span><span>ATC RTF (MTSAT)</span><span class="ok">M3</span><span>ATC RTF (Iridium)</span><span class="ok">O</span><span>VOR</span><span class="ok">P1–P9</span><span>Reserved for RCP</span><span class="ok">R</span><span>PBN approved (see Note 4)</span><span class="ok">T</span><span>TACAN</span><span class="ok">U</span><span>UHF RTF</span><span class="ok">V</span><span>VHF RTF</span><span class="ok">W</span><span>RVSM approved</span><span class="ok">X</span><span>MNPS approved</span><span class="ok">Y</span><span>VHF with 8.33 kHz channel spacing</span><span class="ok">Z</span><span>Other equipment carried (specify in Item 18 preceded by COM/, NAV/ and/or DAT/)</span></div><div class="rl"><b>Note 1:</b> If S is used, standard equipment is VHF RTF, VOR and ILS.<br><b>Note 2:</b> If G is used, specify in Item 18 with NAV/ the types of GNSS augmentation.<br><b>Note 3:</b> J1 → see RTCA/EUROCAE ATN B1 INTEROP Standard.<br><b>Note 4:</b> If R is used, specify in Item 18 with PBN/ the performance-based navigation levels.<br><b>Note 5:</b> If Z is used, specify in Item 18 with COM/, NAV/ and/or DAT/.<br><b>Note 6:</b> Information on navigation capability is provided to ATC for clearance and routing purposes.</div><h3>Surveillance equipment — SSR Modes A and C</h3><div class="og"><span class="ok">N</span><span>No surveillance equipment, or unserviceable</span><span class="ok">A</span><span>Transponder Mode A (4 digits — 4096 codes)</span><span class="ok">C</span><span>Transponder Mode A (4 digits — 4096 codes) and Mode C</span></div><h3>Surveillance equipment — SSR Mode S</h3><div class="og"><span class="ok">E</span><span>Mode S, including identification, pressure-altitude and extended squitter (ADS-B)</span><span class="ok">H</span><span>Mode S, including identification, pressure-altitude and enhanced surveillance</span><span class="ok">I</span><span>Mode S, including identification, but no pressure-altitude</span><span class="ok">L</span><span>Mode S, including identification, pressure-altitude, extended squitter (ADS-B) and enhanced surveillance</span><span class="ok">P</span><span>Mode S, including pressure-altitude, but no identification</span><span class="ok">S</span><span>Mode S, including pressure-altitude and identification</span><span class="ok">X</span><span>Mode S with neither identification nor pressure-altitude</span></div><div class="rl"><b>Enhanced surveillance</b> is the ability of the aircraft to down-link aircraft-derived data via Mode S transponder.</div><h3>ADS-B</h3><div class="og"><span class="ok">B1</span><span>ADS-B with dedicated 1090 MHz "out" capability</span><span class="ok">B2</span><span>ADS-B with dedicated 1090 MHz "out" and "in" capability</span><span class="ok">U1</span><span>ADS-B "out" capability using UAT</span><span class="ok">U2</span><span>ADS-B "out" and "in" capability using UAT</span><span class="ok">V1</span><span>ADS-B "out" capability using VDL Mode 4</span><span class="ok">V</span><span>ADS-B "out" and "in" capability using VDL Mode 4</span></div><h3>ADS-C</h3><div class="og"><span class="ok">D1</span><span>ADS-C with FANS 1/A capabilities</span><span class="ok">G1</span><span>ADS-C with ATN capabilities</span></div><div class="ex">Example: ADE3RV/HB2U2V2G1</div><div class="rl">Alphanumeric characters not indicated above are reserved. Additional surveillance applications shall be listed in Item 18 following the indicator SUR/.</div>'},
+"item13-ad":{t:"ITEM 13",h:"DEPARTURE AERODROME (4 characters)",b:'<p>Insert the <b>ICAO four-letter location indicator</b> of the departure aerodrome.</p><div class="ex">Examples: LEMD, LEBL, EHAM</div><p>If no location indicator has been assigned → <b>ZZZZ</b> + name of the aerodrome in Item 18 preceded by DEP/.</p><p>If the flight plan is received from an aircraft in flight → <b>AFIL</b> + ICAO location indicator of the ATS unit from which supplementary flight plan data can be obtained, in Item 18 preceded by DEP/.</p>'},
+"item13-time":{t:"ITEM 13",h:"TIME (4 figures UTC, no space)",b:'<div class="rl">For a flight plan filed before departure: estimated off-block time in UTC.</div><div class="rl">For a flight plan received from an aircraft in flight: actual or estimated time over the first point of the route.</div><div class="ex">Example: LEMD0940</div>'},
+"item15-speed":{t:"ITEM 15",h:"CRUISING SPEED (max. 5 characters)",b:'<p>True Air Speed (TAS) for the first or whole cruising portion:</p><div class="og"><span class="ok">K</span><span>Kilometres per hour + 4 figures (e.g. K0830)</span><span class="ok">N</span><span>Knots + 4 figures (e.g. N0485)</span><span class="ok">M</span><span>Mach + 3 figures (e.g. M082)</span></div><div class="rl">Inserted without a space before the cruising level.</div>'},
+"item15-level":{t:"ITEM 15",h:"LEVEL (max. 5 characters)",b:'<div class="og"><span class="ok">F</span><span>Flight level + 3 figures (e.g. F330)</span><span class="ok">S</span><span>Standard metric level (e.g. S1130)</span><span class="ok">A</span><span>Altitude in hundreds of feet (e.g. A045)</span><span class="ok">M</span><span>Altitude in tens of metres (e.g. M0840)</span><span class="ok">VFR</span><span>For uncontrolled VFR flights</span></div><div class="ex">Examples: F290, A045, VFR</div>'},
+"item15-route":{t:"ITEM 15",h:"ROUTE",b:'<h3>Flights along designated ATS routes</h3><p>If the departure aerodrome is located on or connected to the ATS route, insert directly the designator of the first ATS route.</p><p>If the departure aerodrome is <b>NOT</b> on or connected to the ATS route, insert the letters <b>DCT</b> followed by the point of joining the first ATS route, followed by the designator of the ATS route.</p><div class="ex">AD on route: UA6 PON URION...\nAD off route: DCT MOPIL UA6 PON...</div><h3>Flights outside designated ATS routes</h3><p>Insert points normally not more than 30 minutes flying time or 370 km (200 NM) apart, including each point at which a change of speed, level, track or flight rules is planned.</p><h3>Format of each element (separated by a space)</h3><div class="og"><span class="ok">(1) ATS route</span><span>2-7 characters (BCN1, UB10, R14)</span><span class="ok">(2) Significant point</span><span>2-11 characters (LN, HADDY, 46N078W)</span><span class="ok">(3) Speed/level change</span><span>Max. 21 chars. Point + oblique stroke + new speed and level (e.g. LN/N0284A045)</span><span class="ok">(4) Flight rules change</span><span>Max. 3 chars. (VFR, IFR)</span><span class="ok">(5) Cruise climb</span><span>C/ + point and levels</span></div><div class="rl"><b>When is a speed/level change reported?</b> The route must include any point where there is a speed change of <b>5% TAS or 0.01 Mach or more</b>, or a level change. Smaller variations need not be reported. Format: point + oblique stroke + new speed and level together, <b>even when only one of the two changes</b> (both values are always repeated).</div><div class="og"><span class="ok">PEPAX/N0290F240</span><span>At PEPAX: speed changes to 290 kts TAS at FL240</span><span class="ok">GOMET/M078F380</span><span>At GOMET: speed changes to Mach 0.78 at FL380</span></div><h3>Complete example</h3><div class="ex">N0450F350 UA6 PON URION/N0420F290 UB10 HADDY/N0400A080 VFR DCT 4611N00412W FATIM UW3 C/46N050W/M082F290F350</div><h3>Step-by-step decoding</h3><div class="og"><span class="ok">N0450F350</span><span><b>(Speed+Initial level)</b> — 450 kts TAS at FL350</span><span class="ok">UA6</span><span><b>(1) ATS route</b> — Upper airway UA6</span><span class="ok">PON</span><span><b>(2) Significant point</b> — Fix PON</span><span class="ok">URION/N0420F290</span><span><b>(3) Speed/level change</b> — At URION: 420 kts, FL290</span><span class="ok">UB10</span><span><b>(1) ATS route</b> — Airway UB10</span><span class="ok">HADDY/N0400A080 VFR</span><span><b>(3+4) Speed/level + rules change</b> — 400 kts, 8,000 ft, change to VFR</span><span class="ok">DCT</span><span><b>Direct</b> — Off-airway segment</span><span class="ok">4611N00412W</span><span><b>(2) Coordinates</b> — 46°11\'N / 004°12\'W</span><span class="ok">FATIM</span><span><b>(2) Significant point</b> — Fix FATIM</span><span class="ok">UW3</span><span><b>(1) ATS route</b> — Airway UW3</span><span class="ok">C/46N050W/M082F290F350</span><span><b>(5) Cruise climb</b> — Cruise climb starting at 46N050W, M0.82, FL290→FL350</span></div>'},
+"item16-dest":{t:"ITEM 16",h:"DESTINATION AERODROME (4 characters)",b:'<p>Insert the <b>ICAO four-letter location indicator</b>.</p><div class="ex">Examples: LPPT (Lisbon), EGLL (Heathrow)</div><p>If no location indicator has been assigned → <b>ZZZZ</b> + name in Item 18 preceded by DEST/.</p>'},
+"item16-eet":{t:"ITEM 16",h:"TOTAL EET — Total Estimated Elapsed Time (HHMM)",b:'<p>Insert, <b>without a space</b> after the destination indicator, the total estimated elapsed time in hours and minutes (4 figures).</p><h3>What does EET actually measure?</h3><p><b>IFR flights:</b> Total estimated time required from take-off until arriving over the designated point from which it is intended that an Instrument Approach Procedure will be commenced (IAF), defined by reference to navigation aids. If no navigation aid is associated with the destination aerodrome, the EET is until arriving over the destination aerodrome itself.</p><p><b>VFR flights:</b> Total estimated time required from take-off until arriving over the destination aerodrome.</p><div class="rl"><b>Important:</b> Do not confuse EET with departure time. EET measures the flight time (from take-off to IAF or overhead). The time in Item 13 is the off-block time, i.e. when the aircraft moves from its parking stand.</div><div class="ex">Example: LPPT0230 (destination Lisbon, 2h30m)</div>'},
+"item16-altn":{t:"ITEM 16",h:"ALTERNATE AERODROME(S) (4 characters)",b:'<p>Up to <b>two</b> alternate destination aerodromes, separated by a space.</p><div class="ex">Examples: LPPR (Porto), LEBB (Bilbao)</div><p>If no location indicator has been assigned → <b>ZZZZ</b> + name in Item 18 preceded by ALTN/.</p>'},
+"item16-altn2":{t:"ITEM 16",h:"2ND ALTN — Second alternate aerodrome",b:'<p>Same as the first alternate. ICAO four-letter location indicator.</p><div class="rl">Optional. Used when two alternates are planned.</div>'},
+"item18":{t:"ITEM 18",h:"OTHER INFORMATION",b:'<p>Insert <b>0</b> (zero) if no other information. Otherwise, insert the appropriate indicator followed by an oblique stroke and the information:</p><div class="og"><span class="ok">EET/</span><span>Significant points or FIR boundaries and accumulated estimated elapsed times</span><span class="ok">RIF/</span><span>Route details to revised destination + ICAO indicator</span><span class="ok">REG/</span><span>Registration markings if different from Item 7</span><span class="ok">SEL/</span><span>SELCAL code</span><span class="ok">OPR/</span><span>Name of operator</span><span class="ok">STS/</span><span>Reasons for special handling by ATS. More than one STS entry may be made, but the indicator STS/ shall only be used once. Codes:<br><br><b>STS/ALTRV</b> — Flights operated in accordance with an altitude reservation<br><b>STS/ATFMX</b> — Flights approved for exemption from ATFM measures (*)<br><b>STS/FFR</b> — Fire-fighting flights (*)<br><b>STS/FLTCK</b> — Flight check for calibration of navaids<br><b>STS/HAZMAT</b> — Flights carrying hazardous material<br><b>STS/HEAD</b> — Flights with Head of State status (*)<br><b>STS/HOSP</b> — Medical flights declared by medical authorities (transport of sick/injured persons, transplants, blood, medicine) (*)<br><b>STS/HUM</b> — Flights operating on a humanitarian mission<br><b>STS/MARSA</b> — Flights for which the military pilot-in-command assumes responsibility for separation of military aircraft<br><b>STS/MEDEVAC</b> — Life-critical medical emergency evacuation (*)<br><b>STS/NONRVSM</b> — Non-RVSM-capable flights intending to operate in RVSM airspace<br><b>STS/SAR</b> — Flights engaged in search and rescue missions (*)<br><b>STS/STATE</b> — Military or civil registered aircraft used in military, customs or police services<br><br><i>(*) Leads to automatic exemption from ATFM restrictions</i><br><br>Any other reasons for special handling by ATS shall be inserted following the designator RMK/.</span><span class="ok">TYP/</span><span>Type(s) of aircraft if ZZZZ inserted in Item 9</span><span class="ok">COM/</span><span>Significant communication data</span><span class="ok">DAT/</span><span>Data link (S, H, V, M)</span><span class="ok">NAV/</span><span>Significant navigation data</span><span class="ok">DEP/</span><span>Name of departure aerodrome if ZZZZ in Item 13</span><span class="ok">DEST/</span><span>Name of destination aerodrome if ZZZZ in Item 16</span><span class="ok">ALTN/</span><span>Name of destination alternate if ZZZZ in Item 16</span><span class="ok">RALT/</span><span>Name of en-route alternate</span><span class="ok">CODE/</span><span>Aircraft address (6-character hexadecimal code)</span><span class="ok">DOF/</span><span>Date of flight in YYMMDD format (e.g. DOF/170409 = 2017-04-09). ICAO format: YYMMDD, not DD/MM/YY</span><span class="ok">RMK/</span><span>Plain-language remarks</span></div><div class="ex">EET/CAP0745 XYZ0830 · REG/FBVGA · SEL/EJFL · DOF/260405</div>'},
+"item19-endurance":{t:"ITEM 19",h:"ENDURANCE (E/)",b:'<p>After <b>E/</b>, insert a 4-figure group giving the fuel endurance in hours and minutes.</p><div class="ex">Example: 0345 (3 hours 45 minutes)</div><div class="rl"><b>Important:</b> The taxi fuel is <b>NOT</b> included in the endurance. By definition, endurance is the time the aircraft can remain airborne with the fuel contained in the tanks before the tanks run dry. Therefore disregard the taxi fuel, but <b>DO</b> include the final reserve fuel.</div><div class="rl">NOT transmitted in FPL messages. Supplementary information for emergencies.</div>'},
+"item19-pob":{t:"ITEM 19",h:"PERSONS ON BOARD (P/)",b:'<p>After <b>P/</b>, insert the total number of persons (passengers + crew) on board.</p><p>If the total number is not known at the time of filing → <b>TBN</b> (to be notified).</p><div class="ex">Example: 300 or TBN</div>'},
+"item19-radio":{t:"ITEM 19",h:"R/ — EMERGENCY RADIO",b:'<p><b>Cross out</b> the indicators that are NOT available:</p><div class="og"><span class="ok">U</span><span>Cross out if UHF on 243.0 MHz is NOT available</span><span class="ok">V</span><span>Cross out if VHF on 121.5 MHz is NOT available</span><span class="ok">E</span><span>Cross out if no Emergency Locator Transmitter (ELT) is carried</span></div><div class="rl">Leave uncrossed those that ARE available.</div>'},
+"item19-survival":{t:"ITEM 19",h:"S/ — SURVIVAL EQUIPMENT",b:'<p>Cross out all indicators if no survival equipment is carried. Cross out individually those NOT carried:</p><div class="og"><span class="ok">P</span><span>Polar</span><span class="ok">D</span><span>Desert</span><span class="ok">M</span><span>Maritime</span><span class="ok">J</span><span>Jungle</span></div>'},
+"item19-jackets":{t:"ITEM 19",h:"J/ — JACKETS (Life jackets)",b:'<p>Cross out all if no life jackets are carried. Cross out the features the jackets do NOT have:</p><div class="og"><span class="ok">L</span><span>Cross out if jackets are not equipped with lights</span><span class="ok">F</span><span>Cross out if jackets are not equipped with fluorescein</span><span class="ok">U/V</span><span>Radio capability of the jackets</span></div>'},
+"item19-dinghies":{t:"ITEM 19",h:"D/ — DINGHIES",b:'<p>If no dinghies are carried → cross out D and C. If dinghies are carried:</p><div class="og"><span class="ok">NUMBER</span><span>Number of dinghies</span><span class="ok">CAPACITY</span><span>Total capacity in persons of all dinghies</span><span class="ok">COVER</span><span>Cross out C if dinghies are not covered</span><span class="ok">COLOUR</span><span>Colour of the dinghies</span></div>'},
+"item19-aircraft":{t:"ITEM 19",h:"A/ — AIRCRAFT COLOUR AND MARKINGS",b:'<p>Colour of the aircraft and significant markings.</p><div class="ex">Example: WHITE</div><div class="rl">Critical for SAR (Search and Rescue) operations.</div>'},
+"item19-remarks":{t:"ITEM 19",h:"N/ — REMARKS",b:'<p>Cross out N if no remarks.</p><div class="rl">For additional information about emergency equipment not covered in other fields.</div>'},
+"item19-pilot":{t:"ITEM 19",h:"C/ — PILOT IN COMMAND",b:'<p>Insert the name of the pilot-in-command.</p><div class="ex">Example: DENKE</div><div class="rl">Mandatory field in supplementary information.</div>'}
+};
+
+var dr=document.getElementById('dr'),bk=document.getElementById('bk');
+function isMob(){return window.innerWidth<900}
+function close(){dr.classList.remove('open');bk.classList.remove('open');document.body.style.overflow=''}
+bk.addEventListener('click',close);
+bk.addEventListener('touchend',function(e){e.preventDefault();close()});
+document.getElementById('drC').addEventListener('click',close);
+document.getElementById('drC').addEventListener('touchend',function(e){e.preventDefault();close()});
+var ty=0;
+dr.addEventListener('touchstart',function(e){ty=e.touches[0].clientY},{passive:true});
+dr.addEventListener('touchmove',function(e){if(e.touches[0].clientY-ty>80)close()},{passive:true});
+
+var fds=document.querySelectorAll('.fd[data-f]');
+for(var i=0;i<fds.length;i++){
+  fds[i].addEventListener('click',function(){
+    var k=this.getAttribute('data-f'),d=E[k];
+    if(!d)return;
+    var a=document.querySelectorAll('.fd.on');
+    for(var j=0;j<a.length;j++)a[j].classList.remove('on');
+    this.classList.add('on');
+    if(isMob()){
+      document.getElementById('mT').textContent=d.t;
+      document.getElementById('mH').textContent=d.h;
+      document.getElementById('mB').innerHTML=d.b;
+      dr.offsetHeight;
+      dr.classList.add('open');bk.classList.add('open');
+      document.body.style.overflow='hidden';
+      document.getElementById('drS').scrollTop=0;
+    }else{
+      document.getElementById('es').style.display='none';
+      document.getElementById('dC').style.display='block';
+      document.getElementById('dT').textContent=d.t;
+      document.getElementById('dH').textContent=d.h;
+      document.getElementById('dB').innerHTML=d.b;
+      document.getElementById('dsk').scrollTop=0;
+    }
+  });
+}
+</script>
+
+
+</body><grammarly-desktop-integration data-grammarly-shadow-root="true" style="visibility: visible !important;"><template shadowrootmode="open"><style>
+      div.grammarly-desktop-integration {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select:none;
+        user-select:none;
+      }
+
+      div.grammarly-desktop-integration:before {
+        content: attr(data-content);
+      }
+    </style><div aria-label="grammarly-integration" role="group" tabindex="-1" class="grammarly-desktop-integration" data-content="{&quot;mode&quot;:&quot;full&quot;,&quot;isActive&quot;:true,&quot;isUserDisabled&quot;:false}"></div></template></grammarly-desktop-integration></html>

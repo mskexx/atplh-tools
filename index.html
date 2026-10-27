@@ -1,21 +1,21 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ATPL(H) Tools</title>
     <style>
       :root {
-        --bg: #0b1220;
-        --bg-soft: #121d2d;
-        --panel: #172334;
-        --panel-alt: #1b2b3d;
-        --primary: #4da3ff;
-        --primary-strong: #2f7ef7;
-        --text: #edf4ff;
-        --muted: #b5c4d9;
-        --border: rgba(255,255,255,0.08);
-        --shadow: rgba(0,0,0,0.28);
+        --bg: #08111c;
+        --bg-soft: #0d1927;
+        --panel: #101e2d;
+        --panel-alt: #142638;
+        --primary: #d6a64a;
+        --primary-strong: #efc36a;
+        --text: #e8eef5;
+        --muted: #a6b5c5;
+        --border: #293d51;
+        --shadow: rgba(0,0,0,0.3);
       }
 
       * { box-sizing: border-box; }
@@ -23,16 +23,16 @@
 
       body {
         margin: 0;
-        font-family: Arial, Helvetica, sans-serif;
-        background: radial-gradient(circle at top, #14243b 0%, var(--bg) 45%, #060d17 100%);
+        font-family: system-ui, "Segoe UI", Arial, sans-serif;
+        background: linear-gradient(180deg, #0d1927 0%, var(--bg) 420px);
         color: var(--text);
         min-height: 100vh;
       }
 
       .container {
-        max-width: 1100px;
+        max-width: 1160px;
         margin: 0 auto;
-        padding: 42px 20px 70px;
+        padding: 36px 24px 64px;
       }
 
       .hero {
@@ -42,11 +42,11 @@
 
       .badge {
         display: inline-block;
-        background: rgba(77, 163, 255, 0.12);
+        background: rgba(214, 166, 74, 0.1);
         color: var(--primary);
-        border: 1px solid rgba(77, 163, 255, 0.35);
+        border: 1px solid rgba(214, 166, 74, 0.38);
         padding: 8px 14px;
-        border-radius: 999px;
+        border-radius: 4px;
         font-size: 0.78rem;
         font-weight: 700;
         letter-spacing: 0.06em;
@@ -69,17 +69,29 @@
 
       .grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 22px;
-        margin-top: 30px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        align-items: stretch;
+        gap: 16px;
+        margin-top: 18px;
       }
 
       .card {
-        background: linear-gradient(180deg, var(--panel) 0%, var(--panel-alt) 100%);
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        background: linear-gradient(145deg, var(--panel) 0%, var(--panel-alt) 100%);
         border: 1px solid var(--border);
-        border-radius: 18px;
-        padding: 22px;
-        box-shadow: 0 14px 26px var(--shadow);
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 8px 18px var(--shadow);
+      }
+
+      .section-title {
+        margin: 38px 0 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border);
+        font-size: 1.35rem;
+        letter-spacing: 0.02em;
       }
 
       .icon {
@@ -87,48 +99,128 @@
         height: 52px;
         display: grid;
         place-items: center;
-        border-radius: 12px;
+        border-radius: 8px;
         font-size: 1.5rem;
-        background: rgba(77, 163, 255, 0.12);
-        border: 1px solid rgba(77, 163, 255, 0.2);
-        margin-bottom: 16px;
+        background: rgba(214, 166, 74, 0.08);
+        border: 1px solid rgba(214, 166, 74, 0.2);
+        margin-bottom: 14px;
       }
 
       .card h2 {
-        margin: 0 0 10px;
-        font-size: 1.25rem;
+        min-height: 1.6em;
+        margin: 0 0 8px;
+        font-size: 1.15rem;
       }
 
       .card p {
-        margin: 0 0 18px;
+        margin: 0 0 14px;
         color: var(--muted);
-        line-height: 1.55;
+        line-height: 1.6;
       }
 
-      .card a {
-        display: inline-block;
+      .card > p {
+        flex: 1;
+      }
+
+      .card .topics {
+        flex: 1;
+        margin: 0;
+        padding: 0;
+        color: var(--muted);
+        list-style: none;
+        line-height: 1.65;
+      }
+
+      .topics > li + li {
+        margin-top: 8px;
+      }
+
+      .topics ul {
+        margin: 4px 0 0;
+        padding-left: 16px;
+      }
+
+      .card .status {
+        flex: 1;
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .card .tool-link {
+        display: inline-flex;
+        align-items: center;
+        align-self: flex-start;
+        max-width: 100%;
+        margin-top: auto;
+        gap: 7px;
+        padding: 7px 0 3px;
+        border-bottom: 1px solid rgba(214, 166, 74, 0.45);
+        color: var(--primary-strong);
+        font-size: 0.92rem;
+        font-weight: 600;
+        line-height: 1.4;
         text-decoration: none;
-        background: var(--primary);
-        color: #fff;
-        padding: 10px 16px;
-        border-radius: 10px;
-        font-weight: 700;
-        transition: background 0.2s ease, transform 0.2s ease;
+        transition: color 0.2s ease, border-color 0.2s ease;
       }
 
-      .card a:hover {
-        background: var(--primary-strong);
-        transform: translateY(-1px);
-      }
-
-      .card.secondary a {
-        background: rgba(255,255,255,0.04);
+      .card .tool-link:hover {
+        border-color: var(--primary-strong);
         color: var(--text);
-        border: 1px solid var(--border);
       }
 
-      .card.secondary a:hover {
-        background: rgba(255,255,255,0.07);
+      .card .tool-link::after {
+        content: "→";
+        flex: 0 0 auto;
+        transition: transform 0.2s ease;
+      }
+
+      .card .tool-link:hover::after {
+        transform: translateX(3px);
+      }
+
+      .card .topics a {
+        color: var(--primary-strong);
+        text-underline-offset: 3px;
+      }
+
+      .card .topics a:hover {
+        color: var(--text);
+      }
+
+      .reference-type {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--primary);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      a:focus-visible {
+        outline: 3px solid var(--primary-strong);
+        outline-offset: 3px;
+      }
+
+      @media (max-width: 860px) {
+        .grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 560px) {
+        .container {
+          padding: 28px 16px 48px;
+        }
+
+        .grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        .card {
+          min-height: 0;
+        }
       }
 
       footer {
@@ -143,37 +235,102 @@
     <div class="container">
       <div class="hero">
         <span class="badge">ATPL(H) Tools</span>
-        <h1>Biblioteca de herramientas</h1>
+        <h1>ATPL(H) Tools</h1>
         <p class="subtitle">
-          Colección centralizada de calculadoras, simulaciones y recursos para estudio y trabajo práctico del ATPL(H).
+        A collection of calculators, simulators and study resources for ATPL(H).
         </p>
       </div>
 
+      <h2 class="section-title">General tools</h2>
       <div class="grid">
         <div class="card">
-          <div class="icon">🧮</div>
-          <h2>Calculadora General</h2>
-          <p>Operaciones básicas, conversiones y cálculo rápido para uso diario en ejercicios y comprobaciones.</p>
-          <a href="./calculadora_senasa.html">Abrir herramienta</a>
-        </div>
-
-        <div class="card secondary">
-          <div class="icon">📘</div>
-          <h2>Futuras calculadoras</h2>
-          <p>Espacio reservado para rendimiento, peso y balance, combustible, rutas y más herramientas especializadas.</p>
-          <a href="#">Próximamente</a>
-        </div>
-
-        <div class="card secondary">
-          <div class="icon">📝</div>
-          <h2>Documentación</h2>
-          <p>Notas, procedimientos, checklist y recursos de consulta para apoyar el estudio continuo.</p>
-          <a href="#">Próximamente</a>
+          <div class="icon" aria-hidden="true">🧮</div>
+          <h2>SENASA calculator</h2>
+          <p>Quick calculations for exercises and checks.</p>
+          <a class="tool-link" href="./tools/general/calculadora_senasa.html">Open calculator</a>
         </div>
       </div>
 
+      <h2 class="section-title">Subjects</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="icon" aria-hidden="true">🧭</div>
+          <h2>Gnav</h2>
+          <p>Navigation and flight-planning tools.</p>
+          <a class="tool-link" href="./tools/gnav/flight-planning/icao-flight-plan-guide.html">ICAO flight plan guide</a>
+        </div>
+
+        <div class="card">
+          <div class="icon" aria-hidden="true">🗺️</div>
+          <h2>Rnav</h2>
+          <p>Radio-navigation aids: NDB/ADF, VOR, DME, ILS, marker beacons and MLS.</p>
+          <a class="tool-link" href="./tools/rnav/radionavigation-aids.html">Radio-navigation guide</a>
+        </div>
+
+        <div class="card">
+          <div class="icon" aria-hidden="true">⚙️</div>
+          <h2>AGK</h2>
+          <ul class="topics">
+            <li><strong>Engines</strong> — Engine simulator coming soon</li>
+            <li><strong>Instruments</strong> — Instruments 1 and 2 coming soon</li>
+            <li><strong>Electrics</strong> — AC simulator and logic
+              <ul>
+                <li><a href="./tools/agk/electrics/Three-Phase Induction Motor.html">Three-phase induction motor</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="icon" aria-hidden="true">🌦️</div>
+          <h2>Meteo</h2>
+          <ul class="topics">
+            <li><a href="./tools/meteo/simulador_frentes_meteorologicos.html">Front simulator</a></li>
+            <li>Rain simulator coming soon</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="icon" aria-hidden="true">📡</div>
+          <h2>Comms</h2>
+          <p class="status">Tools coming soon.</p>
+        </div>
+
+        <div class="card">
+          <div class="icon" aria-hidden="true">🚁</div>
+          <h2>Principles of Flight</h2>
+          <p>Understand how rotor hinge offset affects helicopter flight.</p>
+          <a class="tool-link" href="./tools/principles-of-flight/Hinge Offset Explainer.html">Hinge offset explainer</a>
+        </div>
+
+        <div class="card">
+          <div class="icon" aria-hidden="true">📂</div>
+          <h2>Flight Planning</h2>
+          <p>File a flight plan.</p>
+          <a class="tool-link" href="./tools/flight-planning/icao-flight-plan-guide.html">Flight planning tool</a>
+        </div>
+      </div>
+
+      <h2 class="section-title">Reference links</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="icon" aria-hidden="true">🏛️</div>
+          <span class="reference-type">Official · Spain</span>
+          <h2>AESA question banks</h2>
+          <p>Official Spanish theory exam question banks for PPL, LAPL, SPL and BPL.</p>
+          <a class="tool-link" href="https://www.seguridadaerea.gob.es/en/ambitos/formacion-y-examenes/examenes-de-piloto/examenes-teoricos/bancos-de-preguntas" target="_blank" rel="noopener noreferrer">Visit AESA</a>
+        </div>
+
+        <div class="card">
+          <div class="icon" aria-hidden="true">🇪🇺</div>
+          <span class="reference-type">Official · Europe</span>
+          <h2>EASA European Central Question Bank</h2>
+          <p>Background on the ECQB used across EASA member states for CPL and ATPL theory exams.</p>
+          <a class="tool-link" href="https://www.easa.europa.eu/en/domains/aircrew-and-medical/european-central-question-bank-ecqb" target="_blank" rel="noopener noreferrer">Visit EASA</a>
+        </div>
+
       <footer>
-        ATPL(H) Tools • Repositorio pensado para crecer con cada nueva herramienta.
+        ATPL(H) Tools · Built to grow with every new tool. Always verify current official aeronautical information before flight.
       </footer>
     </div>
   </body>
